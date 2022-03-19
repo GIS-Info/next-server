@@ -16,13 +16,12 @@ Including another URLconf
 Router system: url --- view
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path
 
 from . import views
-from django.conf.urls import url
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    url(r'^$', views.hello),
+    re_path(r'^$', views.hello),
     path('hello/', views.hello_world)
 ]
