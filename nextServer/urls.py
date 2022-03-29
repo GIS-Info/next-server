@@ -16,12 +16,17 @@ Including another URLconf
 Router system: url --- view
 """
 from django.contrib import admin
-from django.urls import path, re_path
-
+from django.urls import path, re_path, include
+from rest_framework.routers import DefaultRouter
 from . import views
+from app.views import UserListView
+
+router = DefaultRouter()
+router.register('api/manage/user', UserListView)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     re_path(r'^$', views.hello),
-    path('hello/', views.hello_world)
+    path('hello/', views.hello_world),
+    path('', include(router.urls))
 ]
