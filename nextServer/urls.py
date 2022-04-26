@@ -28,5 +28,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     re_path(r'^$', views.hello),
     path('hello/', views.hello_world),
-    path('', include(router.urls))
+    path('', include(router.urls)),
+    path('api/', include("apps.post.urls")),
+
+
 ]
