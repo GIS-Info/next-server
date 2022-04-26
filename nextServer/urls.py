@@ -31,5 +31,4 @@ urlpatterns = [
     path('', include(router.urls)),
     path('api/', include("apps.post.urls")),
 
-
 ]
