@@ -38,7 +38,7 @@ def get_post_list(request):
                                  "queryString": queryString})
 
 
-            # Get dataset --> 如果确定好获取的参数，就可以用这一部分，将filter中的参数替换成上面的, 需要检查下下面的类型是否对应
+            # Get dataset --> 如果确定好获取的参数，就可以用这一部分，将filter中的参数替换成上面的, 需要检查下下面的类型是否对应, 需要进一步测试
             # record = GISource.objects.filter(event_id=event_id)
             # paginator = Paginator(record, pageSize)
             # page_content = paginator.page(pageIndex)
