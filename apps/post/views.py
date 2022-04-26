@@ -5,6 +5,7 @@ from .models import GISource
 from django.core import serializers
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.core.paginator import EmptyPage, Paginator
 
 from .serializer import GISourceSerializer
 
@@ -14,18 +15,8 @@ def get_post_list(request):
     """
         Get all the posts with given settings
     """
-    # return HttpResponse("hello world this is the test")
     if request.method == "GET":
-        # req = json.loads(request.body)
-        # key_flag = len(request.GET['pageSize']) & len(request.GET['pageIndex']) & len(request.GET['job']) \
-        #            & len(request.GET['country']) & len(request.GET['term']) & len(request.GET['tag']) \
-        #            & len(request.GET['endMonth']) & len(request.GET['queryString'])
-        # key_flag = request.GET['eventID']
-        # print("key_flag: ")
-        # record = GISource.objects.filter(event_id=key_flag)
-        # serializer = GISourceSerializer(record, many=True)
-        # print(serializer.data)
-        # return JsonResponse({"code": key_flag})
+
         key_flag = len(request.GET['pageSize']) & len(request.GET['pageIndex']) & len(request.GET['job']) \
                    & len(request.GET['country']) & len(request.GET['term']) & len(request.GET['tag']) \
                    & len(request.GET['queryString'])
@@ -40,16 +31,18 @@ def get_post_list(request):
             endMonth = request.GET['endMonth'] # 最后被创建的时间
             queryString = request.GET['queryString']
 
-            # 处理时间的格式, python Date 对象
+            # 处理时间的格式, python Date 对象 --> 这部分是测试
 
             return JsonResponse({"pageSize": pageSize, "pageIndex": pageIndex, "job": job, "endMonth": endMonth,
                                  "country": country, "term": term, "tag": tag,
                                  "queryString": queryString})
 
 
-            # Get dataset
+            # Get dataset --> 如果确定好获取的参数，就可以用这一部分，将filter中的参数替换成上面的, 需要检查下下面的类型是否对应
             # record = GISource.objects.filter(event_id=event_id)
-            # serializer = GISourceSerializer(record, many=True)
+            # paginator = Paginator(record, pageSize)
+            # page_content = paginator.page(pageIndex)
+            # serializer = GISourceSerializer(page_content, many=True)
             # return Response(serializer.data)
 
 @api_view(['GET'])
