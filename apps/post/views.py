@@ -80,6 +80,7 @@ def update_post(request, post_id):
                 country = request.GET['country']
                 term = request.GET['term']
                 tag = request.GET['tag']
+                # 需要确定后续传入的参数
                 # endMonth = request.GET['endMonth']
                 # queryString = request.GET['queryString']
 
