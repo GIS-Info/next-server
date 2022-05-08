@@ -50,7 +50,6 @@ INSTALLED_APPS = [
     'app',
     'rest_framework',
     'apps.post'
-
 ]
 
 MIDDLEWARE = [
@@ -145,3 +144,6 @@ MEDIA_URL = '/media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'app.exceptions.custom_exception_handler'
+}
