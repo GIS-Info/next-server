@@ -8,7 +8,7 @@ class GISource(models.Model):
     """
     event_id = models.AutoField(primary_key = True)
     university_fk = models.IntegerField()
-    required_degree_fk = models.IntegerField()
+    required_degree = models.IntegerField()
     contact1 = models.CharField(max_length=20)
     email1 = models.CharField(max_length=20)
     contact2 = models.CharField(max_length=20)
@@ -27,9 +27,10 @@ class GISource(models.Model):
     verified = models.SmallIntegerField()
     provider = models.CharField(max_length=20)
     provider_email = models.CharField(max_length=255)
-    country_fk = models.IntegerField()
     country = models.IntegerField()
-    job = models.IntegerField()
+    job_title = models.CharField(max_length=55)
+    queryString = models.CharField(max_length=55)
+    detail = models.TextField()
 
     class Meta:
         managed = False
