@@ -16,7 +16,7 @@ def get_posts_by_jobtitle(request):
     Get all the posts with selected job title
 
     e.g.
-     http://127.0.0.1:8000/api/post/job_title?jobTitle=phd
+     http://127.0.0.1:8000/api/post_jobtitle?jobTitle=phd
 
     """
     if request.method == "GET":
@@ -51,10 +51,10 @@ def get_posts_by_querystring(request):
 
         e.g.
         Query by country:
-        http://127.0.0.1:8000/api/post/query_string?queryString=USA
+        http://127.0.0.1:8000/api/post_querystring?queryString=USA
 
         Query by university:
-        http://127.0.0.1:8000/api/post/query_string?queryString=UCSB
+        http://127.0.0.1:8000/api/post_querystring?queryString=UCSB
 
         """
     if request.method == "GET":
@@ -88,7 +88,7 @@ def get_posts_by_major(request):
             Get all the posts by major
 
             e.g.
-            http://127.0.0.1:8000/api/post/major?label=GIS
+            http://127.0.0.1:8000/api/post_major?label=GIS
 
             """
     if request.method == "GET":
@@ -118,6 +118,12 @@ def get_posts_by_major(request):
 
 @api_view(['GET'])
 def get_posts_by_enddate(request):
+    """
+    Get post by closed date
+
+    e.g.
+    http://127.0.0.1:8000/api/post_closedate?year=2022&month=5
+    """
     if request.method == "GET":
         if len(request.GET['year']):
             if len(request.GET['month']):

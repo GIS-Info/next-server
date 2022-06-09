@@ -8,8 +8,8 @@ urlpatterns = [
     path('manage/delete/<int:post_id>', user_views.delete_post, name = 'delete_post'),
     path('manage/add/post', user_views.add_post, name = 'add_post'),
 
-    path('post/job_title/', user_views.get_posts_by_jobtitle, name = 'get_posts_by_jobtitle'),
-    path('post/query_string/', user_views.get_posts_by_querystring, name = 'get_posts_by_querystring'),
-    path('post/major/', user_views.get_posts_by_major, name = 'get_posts_by_major'),
-    path('post/post_by_closed_date/', user_views.get_posts_by_enddate, name = 'get_posts_by_enddate')
+    path('post_jobtitle/', user_views.get_posts_by_jobtitle, name = 'get_posts_by_jobtitle'),
+    path('post_querystring/', user_views.get_posts_by_querystring, name = 'get_posts_by_querystring'),
+    path('post_major/', user_views.get_posts_by_major, name = 'get_posts_by_major'),
+    path('post_closedate/', user_views.get_posts_by_enddate, name = 'get_posts_by_enddate')
 ]
