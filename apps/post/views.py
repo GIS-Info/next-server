@@ -11,6 +11,153 @@ from .serializer import GISourceSerializer
 
 # Create your views here.
 @api_view(['GET'])
+def get_posts_by_jobtitle(request):
+    """
+    Get all the posts with selected job title
+
+    e.g.
+     http://127.0.0.1:8000/api/post_jobtitle?jobTitle=phd
+
+    """
+    if request.method == "GET":
+        if len(request.GET['jobTitle']):
+            jobTitle = request.GET['jobTitle']
+            pageSize = 10
+            pageIndex = 1
+
+            if 'pageSize' in request.GET:
+                pageSize = request.GET['pageSize']
+            if 'pageIndex' in request.GET:
+                pageIndex = request.GET['pageIndex']
+
+            record = GISource.objects.filter(
+                job_title = jobTitle
+            )
+            paginator = Paginator(record, pageSize)
+            page_content = paginator.page(pageIndex)
+            serializer = GISourceSerializer(page_content, many=True)
+            print(serializer.data)
+
+            return Response(serializer.data)
+        else:
+            return JsonResponse({"status": "1", "msg": "Please check the params"})
+    else:
+        return JsonResponse({"status": "0", "msg": "Please check the request method"})
+
+@api_view(['GET'])
+def get_posts_by_querystring(request):
+    """
+        Get all the posts with selected country or university
+
+        e.g.
+        Query by country:
+        http://127.0.0.1:8000/api/post_querystring?queryString=USA
+
+        Query by university:
+        http://127.0.0.1:8000/api/post_querystring?queryString=UCSB
+
+        """
+    if request.method == "GET":
+        if len(request.GET['queryString']):
+            queryString = request.GET['queryString']
+            pageSize = 10
+            pageIndex = 1
+
+            if 'pageSize' in request.GET:
+                pageSize = request.GET['pageSize']
+            if 'pageIndex' in request.GET:
+                pageIndex = request.GET['pageIndex']
+
+            record = GISource.objects.filter(
+                queryString__contains=queryString
+            )
+            paginator = Paginator(record, pageSize)
+            page_content = paginator.page(pageIndex)
+            serializer = GISourceSerializer(page_content, many=True)
+            print(serializer.data)
+
+            return Response(serializer.data)
+        else:
+            return JsonResponse({"status": "1", "msg": "Please check the params"})
+    else:
+        return JsonResponse({"status": "0", "msg": "Please check the request method"})
+
+@api_view(['GET'])
+def get_posts_by_major(request):
+    """
+            Get all the posts by major
+
+            e.g.
+            http://127.0.0.1:8000/api/post_major?label=GIS
+
+            """
+    if request.method == "GET":
+        if len(request.GET['label']):
+            major = request.GET['label']
+            pageSize = 10
+            pageIndex = 1
+
+            if 'pageSize' in request.GET:
+                pageSize = request.GET['pageSize']
+            if 'pageIndex' in request.GET:
+                pageIndex = request.GET['pageIndex']
+
+            record = GISource.objects.filter(
+                label__contains = major
+            )
+            paginator = Paginator(record, pageSize)
+            page_content = paginator.page(pageIndex)
+            serializer = GISourceSerializer(page_content, many=True)
+            print(serializer.data)
+
+            return Response(serializer.data)
+        else:
+            return JsonResponse({"status": "1", "msg": "Please check the params"})
+    else:
+        return JsonResponse({"status": "0", "msg": "Please check the request method"})
+
+@api_view(['GET'])
+def get_posts_by_enddate(request):
+    """
+    Get post by closed date
+
+    e.g.
+    http://127.0.0.1:8000/api/post_closedate?year=2022&month=5
+    """
+    if request.method == "GET":
+        if len(request.GET['year']):
+            if len(request.GET['month']):
+                year = request.GET['year']
+                month = request.GET['month'] # should be 01, 02, ...10, 11, 12
+                print(year)
+                # year_month = year + "-" + month
+
+                pageSize = 10
+                pageIndex = 1
+
+                if 'pageSize' in request.GET:
+                    pageSize = request.GET['pageSize']
+                if 'pageIndex' in request.GET:
+                    pageIndex = request.GET['pageIndex']
+
+                record = GISource.objects.filter(
+                    close_date__year = year,
+                    close_date__month = month
+                )
+                paginator = Paginator(record, pageSize)
+                page_content = paginator.page(pageIndex)
+                serializer = GISourceSerializer(page_content, many=True)
+                print(serializer.data)
+
+                return Response(serializer.data)
+        else:
+            return JsonResponse({"status": "1", "msg": "Please check the params"})
+
+
+
+
+
+@api_view(['GET'])
 def get_post_list(request):
     """
         Get all the posts with given settings
@@ -21,7 +168,7 @@ def get_post_list(request):
 
         key_flag = len(request.GET['pageSize']) & len(request.GET['pageIndex']) & len(request.GET['jobTitle']) \
                    & len(request.GET['country']) & len(request.GET['label']) & len(request.GET['queryString'])
-        #
+
         if key_flag:
             pageSize = request.GET['pageSize'] # 有package
             pageIndex = request.GET['pageIndex']
@@ -101,7 +248,6 @@ def update_post(request, post_id):
         else:
             return JsonResponse({"status": "300", "msg": "Post is not existed, fail to update.."})
 
-
 @api_view(['DELETE'])
 def delete_post(request, post_id):
     """
@@ -116,7 +262,6 @@ def delete_post(request, post_id):
             return JsonResponse({"status": "200", "msg": "Delete the post successfully!"})
         else:
             return JsonResponse({"status": "300", "msg": "Post doesnot exist, fail to delete"})
-
 
 @api_view(['POST'])
 def add_post(request):
