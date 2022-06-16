@@ -14,7 +14,7 @@ def hello_world(request):
 def hello(request):
     return HttpResponse("Welcome")
 
-@nextServer_view(['GET'])
+@api_view(['GET'])
 def index(request):
     date = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
     message = 'Clock In server is live cutrrent time is'
