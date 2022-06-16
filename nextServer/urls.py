@@ -30,5 +30,7 @@ urlpatterns = [
     path('hello/', views.hello_world),
     path('', include(router.urls)),
     path('api/', include("apps.post.urls")),
-
+    path('admin/', admin.site.urls),
+    path('checkserver/',index,name='index'),
+    path('auth/', include('authapp.urls')),
 ]
