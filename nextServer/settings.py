@@ -49,7 +49,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'app',
     'rest_framework',
-    'apps.post'
+    'rest_framework.authtoken'
+    'apps.post',
+    'authapp',
+    'djoser',
 ]
 
 MIDDLEWARE = [
@@ -119,6 +122,20 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = 'authapp.User'
+
+DJOSER = {
+    'LOGIN_FIELD':'email',
+    'LOGIN_FIELD':'text',
+
+
+    'USER_CREATE_PASSWORD_RETYPE':True,
+    'SERIALIZERS':{
+         'user_create':'authapp.serializers.UserCreateSerializer',
+         'user':'authapp.serializers.UserCreateSerializer',
+        }
+
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
@@ -148,5 +165,13 @@ MEDIA_URL = '/media/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
-    'EXCEPTION_HANDLER': 'app.exceptions.custom_exception_handler'
+    'EXCEPTION_HANDLER': 'app.exceptions.custom_exception_handler',
+    'DEFAULT_AUTHENTICATION_CLASSES':( # add authentication 
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_PERMISSIONS_CLASSES':(
+        'rest_framework.permissions.IsAuthenticated',
+    )
 }
