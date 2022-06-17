@@ -19,6 +19,7 @@ from django.contrib import admin
 from django.urls import path, re_path, include
 from rest_framework.routers import DefaultRouter
 from . import views
+from . import index
 from app.views import UserListView
 
 router = DefaultRouter()
@@ -30,5 +31,6 @@ urlpatterns = [
     path('hello/', views.hello_world),
     path('', include(router.urls)),
     path('api/', include("apps.post.urls")),
-
+    path('checkserver/', index, name='index'),
+    path('auth/'. include('authapp.urls'))
 ]
