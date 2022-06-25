@@ -120,7 +120,6 @@ def get_posts_by_major(request):
 def get_posts_by_enddate(request):
     """
     Get post by closed date
-
     e.g.
     http://127.0.0.1:8000/api/post_closedate?year=2022&month=5
     """
@@ -152,9 +151,6 @@ def get_posts_by_enddate(request):
                 return Response(serializer.data)
         else:
             return JsonResponse({"status": "1", "msg": "Please check the params"})
-
-
-
 
 
 @api_view(['GET'])
@@ -266,9 +262,9 @@ def delete_post(request, post_id):
 @api_view(['POST'])
 def add_post(request):
     """Create: Add new post
-    api/manage/post
+    api/post/add
     e.g.
-    http://127.0.0.1:8000/api/manage/add/post
+    http://127.0.0.1:8000/api/post/add
     Request body:
     jobTitle: Test job title
     country: 1001
