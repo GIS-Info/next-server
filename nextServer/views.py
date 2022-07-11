@@ -8,4 +8,3 @@ def hello_world(request):
 
 def hello(request):
     return HttpResponse("Welcome")
-

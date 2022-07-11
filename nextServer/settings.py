@@ -49,7 +49,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'app',
     'rest_framework',
-    'apps.post'
+    'apps.post',
+    'accounts',
+    'knox',
 ]
 
 MIDDLEWARE = [
@@ -148,5 +150,10 @@ MEDIA_URL = '/media/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
-    'EXCEPTION_HANDLER': 'app.exceptions.custom_exception_handler'
+    'EXCEPTION_HANDLER': 'app.exceptions.custom_exception_handler',
+    'DEFAULT_AUTHENTICATION_CLASSES':[ 
+         # add authentication
+        'rest_framework.authentication.TokenAuthentication',
+        'knox.auth.TokenAuthentication',
+    ],
 }

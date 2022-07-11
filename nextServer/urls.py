@@ -30,5 +30,5 @@ urlpatterns = [
     path('hello/', views.hello_world),
     path('', include(router.urls)),
     path('api/', include("apps.post.urls")),
-
+    path('', include('accounts.urls')),
 ]
