@@ -17,7 +17,6 @@ def get_posts_by_jobtitle(request):
 
     e.g.
      http://127.0.0.1:8000/api/post_jobtitle?jobTitle=phd
-
     """
     if request.method == "GET":
         if len(request.GET['jobTitle']):
@@ -152,6 +151,26 @@ def get_posts_by_enddate(request):
         else:
             return JsonResponse({"status": "1", "msg": "Please check the params"})
 
+@api_view(['GET'])
+def get_all_post(request):
+    """
+    Get all the posts
+    e.g. http://127.0.0.1:8000/api/post/all
+    """
+    if request.method == 'GET':
+        # pageSize = 10
+        # pageIndex = 1
+
+        all_posts = GISource.objects.all()
+        # paginator = Paginator(all_posts, pageSize)
+        # page_content = paginator.page(pageIndex)
+        # serializer = GISourceSerializer(page_content, many=True)
+        # print(serializer.data)
+        # return Response(serializer.data)
+        serializer = GISourceSerializer(all_posts, many=True)
+        return Response(serializer.data)
+    else:
+        return JsonResponse({"code": 0, "msg": "Not GET method"})
 
 @api_view(['GET'])
 def get_post_list(request):
@@ -161,7 +180,6 @@ def get_post_list(request):
         http://127.0.0.1:8000/api/post?pageSize=2&pageIndex=3&jobTitle=postdoc&country=100&label=GIS&queryString=geography
     """
     if request.method == "GET":
-
         key_flag = len(request.GET['pageSize']) & len(request.GET['pageIndex']) & len(request.GET['jobTitle']) \
                    & len(request.GET['country']) & len(request.GET['label']) & len(request.GET['queryString'])
 
@@ -184,10 +202,6 @@ def get_post_list(request):
             page_content = paginator.page(pageIndex)
             serializer = GISourceSerializer(page_content, many=True)
             print(serializer.data)
-            # return JsonResponse({"pageSize": pageSize, "pageIndex": pageIndex,
-            #                      "job": jobTitle, "country": country,
-            #                      "label": label, "queryString": queryString
-            #                      })
             return Response(serializer.data)
 
 @api_view(['GET'])
