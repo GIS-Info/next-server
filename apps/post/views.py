@@ -152,32 +152,49 @@ def get_posts_by_enddate(request):
             return JsonResponse({"status": "1", "msg": "Please check the params"})
 
 @api_view(['GET'])
-def get_all_post(request):
-    """
-    Get all the posts
-    e.g. http://127.0.0.1:8000/api/post/all
-    """
-    if request.method == 'GET':
-        # pageSize = 10
-        # pageIndex = 1
-
-        all_posts = GISource.objects.all()
-        # paginator = Paginator(all_posts, pageSize)
-        # page_content = paginator.page(pageIndex)
-        # serializer = GISourceSerializer(page_content, many=True)
-        # print(serializer.data)
-        # return Response(serializer.data)
-        serializer = GISourceSerializer(all_posts, many=True)
-        return Response(serializer.data)
-    else:
-        return JsonResponse({"code": 0, "msg": "Not GET method"})
-
-@api_view(['GET'])
 def get_post_list(request):
     """
         Get all the posts with given settings
         e.g.
-        http://127.0.0.1:8000/api/post?pageSize=2&pageIndex=3&jobTitle=postdoc&country=100&label=GIS&queryString=geography
+        http://127.0.0.1:8000/api/post?pageSize=2&pageIndex=1
+        http://127.0.0.1:8000/api/post?pageSize=2&pageIndex=1&job_title=phd&country=100
+
+    """
+    if request.method == "GET":
+        params = {}
+        pageSize = 10
+        pageIndex = 1
+
+        for key in request.GET:
+            if key == 'pageSize':
+                pageSize = request.GET[key]
+            elif key == 'pageIndex':
+                pageIndex = request.GET[key]
+            else:
+                params[key] = request.GET[key]
+        if params:
+            record = GISource.objects.filter(**params)
+        else:
+            record = GISource.objects.all()
+
+        paginator = Paginator(record, pageSize)
+        page_content = paginator.page(pageIndex)
+        serializer = GISourceSerializer(page_content, many=True)
+        print(serializer.data)
+        return Response(serializer.data)
+    else:
+        return JsonResponse({"code": 0, "msg": "wrong request method"})
+
+
+# this is deprecated
+@api_view(['GET'])
+def get_post_list_deprecated(request):
+    """
+        Get all the posts with given settings
+        e.g.
+        http://127.0.0.1:8000/api/post?pageSize=2&pageIndex=1&jobTitle=postdoc&country=100&label=GIS&queryString=geography
+        http://127.0.0.1:8000/api/post?pageSize=2&pageIndex=1&jobTitle=phd&country=100&label=GIS&queryString=geography
+
     """
     if request.method == "GET":
         key_flag = len(request.GET['pageSize']) & len(request.GET['pageIndex']) & len(request.GET['jobTitle']) \
@@ -196,7 +213,8 @@ def get_post_list(request):
 
             # Get dataset --> 如果确定好获取的参数，就可以用这一部分，将filter中的参数替换成上面的, 需要检查下下面的类型是否对应, 需要进一步测试
             record = GISource.objects.filter(
-                country = country
+                country = country,
+                job_title = jobTitle
             )
             paginator = Paginator(record, pageSize)
             page_content = paginator.page(pageIndex)
