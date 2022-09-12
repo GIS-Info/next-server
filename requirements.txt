@@ -8,3 +8,4 @@ pycparser==2.21
 PyMySQL==1.0.2
 pytz==2022.1
 sqlparse==0.4.2
+django-rest-knox==4.2.0
