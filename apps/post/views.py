@@ -180,7 +180,7 @@ def get_post_list(request):
         paginator = Paginator(record, pageSize)
         page_content = paginator.page(pageIndex)
         serializer = GISourceSerializer(page_content, many=True)
-        print(serializer.data)
+        # print(serializer.data)
         return Response(serializer.data)
     else:
         return JsonResponse({"code": 0, "msg": "wrong request method"})
