@@ -13,7 +13,7 @@ class APIRenderer(JSONRenderer):
         response = {
             'code': code,
             'message': message,
-            'data': ""
+            'data': data
         }
 
         return super(APIRenderer, self).render(response, accepted_media_type, renderer_context)
