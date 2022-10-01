@@ -10,6 +10,7 @@ class APIRenderer(JSONRenderer):
         if response.exception:
             code = 1
             message = data['error']
+            data = None
         response = {
             'code': code,
             'message': message,
