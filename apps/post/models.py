@@ -6,13 +6,35 @@ class GISource(models.Model):
     """
     Each post contains the information: post_id, job, country, term, tag, end_month, query_string
     """
+    """
+    改用新的表结构
+    """
+    event_id = models.AutoField(primary_key = True)
+    university_cn = models.CharField(max_length=100)
+    university_en = models.CharField(max_length=100)
+    country_cn = models.CharField(max_length=100)
+    country_en = models.CharField(max_length=100)
+    job_cn = models.CharField(max_length=100)
+    job_en = models.CharField(max_length=100)
+    description = models.CharField(max_length=5000)
+    title_cn = models.CharField(max_length=400)
+    title_en = models.CharField(max_length=400)
+    label_physical_geo = models.SmallIntegerField()
+    label_human_geo = models.SmallIntegerField()
+    label_urban = models.SmallIntegerField()
+    label_gis = models.SmallIntegerField()
+    label_rs = models.SmallIntegerField()
+    label_gnss = models.SmallIntegerField()
+    date = models.DateField()
+
+    '''
     event_id = models.AutoField(primary_key = True)
     university_fk = models.IntegerField()
     required_degree = models.IntegerField()
-    contact1 = models.CharField(max_length=20)
-    email1 = models.CharField(max_length=20)
-    contact2 = models.CharField(max_length=20)
-    email2 = models.CharField(max_length=20)
+    contact1 = models.CharField(max_length=40)
+    email1 = models.CharField(max_length=40)
+    contact2 = models.CharField(max_length=40)
+    email2 = models.CharField(max_length=40)
     url = models.CharField(max_length=255)
     post_date = models.DateField()
     close_date = models.DateField()
@@ -31,13 +53,21 @@ class GISource(models.Model):
     job_title = models.CharField(max_length=55)
     queryString = models.CharField(max_length=55)
     detail = models.TextField()
+    '''
 
     class Meta:
         managed = False
         db_table = 'GISource'
 
-
-
-
-
+'''
+class Countries(models.Model):
+    Country_ID = models.AutoField(primary_key = True)
+    Country_Name_CN = models.CharField(max_length=20)
+    Country_Name_EN = models.CharField(max_length=20)
+    Continent_FK = models.CharField(max_length=20)
+    Continent = models.CharField(max_length=20)
+    class Meta:
+        managed = False
+        db_table = 'Countries'
+'''
 

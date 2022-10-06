@@ -173,9 +173,9 @@ def get_post_list(request):
             else:
                 params[key] = request.GET[key]
         if params:
-            record = GISource.objects.filter(**params)
+            record = GISource.objects.filter(**params).order_by('-event_id')
         else:
-            record = GISource.objects.all()
+            record = GISource.objects.all().order_by('-event_id')
 
         paginator = Paginator(record, pageSize)
         page_content = paginator.page(pageIndex)
