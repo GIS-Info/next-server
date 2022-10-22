@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.pagination import PageNumberPagination
+from knox.auth import TokenAuthentication
 from .serializer import UserListSerializer
 
 
@@ -15,6 +17,8 @@ class UserListView(ModelViewSet):
     serializer_class = UserListSerializer
     lookup_field = 'username'
     pagination_class = UserListPagination
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         return User.objects.all().order_by('id')
