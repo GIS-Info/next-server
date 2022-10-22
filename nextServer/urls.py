@@ -16,12 +16,11 @@ Including another URLconf
 Router system: url --- view
 """
 from django.contrib import admin
-from django.urls import include, path, re_path
+from django.urls import path, re_path, include
 from rest_framework.routers import DefaultRouter
-
-from app.views import UserListView
-
 from . import views
+from app.views import UserListView
+from django.conf import settings
 
 router = DefaultRouter()
 router.register('api/manage/user', UserListView)
@@ -34,3 +33,6 @@ urlpatterns = [
     path('api/', include("apps.post.urls")),
     path('', include('accounts.urls')),
 ]
+if settings.DEBUG:
+    urlpatterns += [path('', include('app.apis.swagger.urls')),
+                    ]
