@@ -173,17 +173,19 @@ def get_post_list(request):
             else:
                 params[key] = request.GET[key]
         if params:
-            record = GISource.objects.filter(**params)
+            record = GISource.objects.filter(**params).order_by('-event_id')
         else:
-            record = GISource.objects.all()
+            record = GISource.objects.all().order_by('-event_id')
 
         paginator = Paginator(record, pageSize)
         page_content = paginator.page(pageIndex)
+        #条数，用于前端显示页码
+        count = paginator.count
         serializer = GISourceSerializer(page_content, many=True)
         # print(serializer.data)
-        return Response(serializer.data)
+        return Response({"code": 0, "data": serializer.data, "count": count})
     else:
-        return JsonResponse({"code": 0, "msg": "wrong request method"})
+        return JsonResponse({"code": 1, "msg": "wrong request method"})
 
 
 # this is deprecated
@@ -239,7 +241,7 @@ def get_post_by_id(request, post_id):
             serializer = GISourceSerializer(record, many=True)
             return Response(serializer.data)
         else:
-            return JsonResponse({"code": 0, "msg": "wrong post id"})
+            return JsonResponse({"code": 2, "msg": "wrong post id"})
 
 @api_view(['POST'])
 def update_post(request, post_id):
