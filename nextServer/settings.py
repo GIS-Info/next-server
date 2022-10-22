@@ -24,7 +24,7 @@ env = environ.Env(
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-environ.Env.read_env(BASE_DIR.joinpath('.env'))
+environ.Env.read_env(BASE_DIR.joinpath('.env.dev.local'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -145,7 +145,7 @@ MEDIA_URL = '/media/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
-    'EXCEPTION_HANDLER': 'app.exceptions.custom_exception_handler',
+    # 'EXCEPTION_HANDLER': 'app.exceptions.custom_exception_handler',
     'DEFAULT_AUTHENTICATION_CLASSES': [
         # add authentication
         'rest_framework.authentication.TokenAuthentication',
@@ -189,7 +189,7 @@ LOGGING = {
         'file_info': {  # 定义一个处理器 file
             'level': 'INFO',  # 定义 handler 的日志级别
             'class': 'logging.handlers.TimedRotatingFileHandler',  # 使用文件类处理器，可以将日志写入文件中
-            'filename': LOGGING_DIR / 'info' / 'log',  # 定义日志信息的存储路径，文件路径需要确认有可写权限
+            'filename': info_log_dir / 'log',  # 定义日志信息的存储路径，文件路径需要确认有可写权限
             'formatter': 'verbose',
             'when': 'midnight',
             'interval': 3,
@@ -198,7 +198,7 @@ LOGGING = {
         'file_debug': {
             'level': 'DEBUG',
             'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': LOGGING_DIR / 'debug' / 'log',
+            'filename': debug_log_dir / 'log',
             'formatter': 'verbose',
             'when': 'midnight',
             'interval': 1,
@@ -207,7 +207,7 @@ LOGGING = {
         'file_error': {
             'level': 'ERROR',
             'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': LOGGING_DIR / 'error' / 'log',
+            'filename': error_log_dir / 'log',
             'formatter': 'verbose',
             'when': 'midnight',
             'interval': 15,

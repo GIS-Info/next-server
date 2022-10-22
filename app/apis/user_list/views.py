@@ -1,9 +1,7 @@
 from django.contrib.auth.models import User
-from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.pagination import PageNumberPagination
 from .serializer import UserListSerializer
-from ...renders import APIRenderer
 
 
 class UserListPagination(PageNumberPagination):
@@ -16,7 +14,6 @@ class UserListView(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserListSerializer
     lookup_field = 'username'
-    renderer_classes = [APIRenderer, BrowsableAPIRenderer]
     pagination_class = UserListPagination
 
     def get_queryset(self):
