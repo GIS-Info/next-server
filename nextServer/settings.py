@@ -24,7 +24,7 @@ env = environ.Env(
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-environ.Env.read_env(BASE_DIR.joinpath('.env.dev.local'))
+environ.Env.read_env(BASE_DIR.joinpath('.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'apps.post',
     'accounts',
     'knox',
+    'drf_yasg'
 ]
 
 MIDDLEWARE = [
@@ -145,7 +146,6 @@ MEDIA_URL = '/media/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
-    # 'EXCEPTION_HANDLER': 'app.exceptions.custom_exception_handler',
     'DEFAULT_AUTHENTICATION_CLASSES': [
         # add authentication
         'rest_framework.authentication.TokenAuthentication',
