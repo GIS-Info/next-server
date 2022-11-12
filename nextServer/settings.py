@@ -12,8 +12,9 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 Configuration file
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
+
 import environ
 
 env = environ.Env(

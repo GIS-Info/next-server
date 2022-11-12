@@ -1,13 +1,15 @@
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
 import json
-from .models import GISource
+
 from django.core import serializers
+from django.core.paginator import EmptyPage, Paginator
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from django.core.paginator import EmptyPage, Paginator
 
+from .models import GISource
 from .serializer import GISourceSerializer
+
 
 # Create your views here.
 @api_view(['GET'])
@@ -304,15 +306,29 @@ def add_post(request):
     country: 1001
     """
     if request.method == "POST":
-        key_flag = len(request.POST["jobTitle"]) | len(request.POST['country'])
+        key_flag = len(request.POST["title_cn"]) | len(request.POST['title_en'])
 
         if key_flag:
-            job_title = request.POST['jobTitle']
-            country = request.POST['country']
+            university_cn = request.POST['university_cn']
+            university_en = request.POST['university_en']
+            country_cn = request.POST['country_cn']
+            country_en = request.POST['country_en']
+            job_cn = request.POST['job_cn']
+            job_en = request.POST['job_en']
+            description = request.POST['description']
+            title_cn = request.POST['title_cn']
+            title_en = request.POST['title_en']
+            label_physical_geo = request.POST['label_physical_geo']
+            label_human_geo = request.POST['label_human_geo']
+            label_urban = request.POST['label_urban']
+            label_gis = request.POST['label_gis']
+            label_rs = request.POST['label_rs']
+            label_gnss = request.POST['label_gnss']
+            date = request.POST['date']
 
             # Insert the new post
             # added_post = GISource(job_title = job_title, country = country)
-            GISource.objects.create(job_title=job_title, country = country)
+            GISource.objects.create(university_cn=university_cn, university_en = university_en, country_cn=country_cn, country_en=country_en, job_cn=job_cn, job_en=job_en, description=description, title_cn=title_cn, title_en=title_en, label_physical_geo=label_physical_geo, label_human_geo=label_human_geo, label_urban=label_urban, label_gis=label_gis, label_rs=label_rs, label_gnss=label_gnss, date=date)
             return JsonResponse({"status": "200", "msg": "public post successfully!"})
     else:
         return JsonResponse({"status": "400", "msg": "Please check the params"})
