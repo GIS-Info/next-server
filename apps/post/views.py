@@ -1,4 +1,7 @@
 import json
+import logging
+# 生成一个以当前文件名为名字的logger实例
+logger = logging.getLogger('django')
 
 from django.core import serializers
 from django.core.paginator import EmptyPage, Paginator
@@ -306,30 +309,32 @@ def add_post(request):
     country: 1001
     """
     if request.method == "POST":
-        key_flag = len(request.POST["title_cn"]) | len(request.POST['title_en'])
-
+        body = json.loads(request.body)
+        key_flag = bool(body["title_cn"]) | bool(body["title_en"])
         if key_flag:
-            university_cn = request.POST['university_cn']
-            university_en = request.POST['university_en']
-            country_cn = request.POST['country_cn']
-            country_en = request.POST['country_en']
-            job_cn = request.POST['job_cn']
-            job_en = request.POST['job_en']
-            description = request.POST['description']
-            title_cn = request.POST['title_cn']
-            title_en = request.POST['title_en']
-            label_physical_geo = request.POST['label_physical_geo']
-            label_human_geo = request.POST['label_human_geo']
-            label_urban = request.POST['label_urban']
-            label_gis = request.POST['label_gis']
-            label_rs = request.POST['label_rs']
-            label_gnss = request.POST['label_gnss']
-            date = request.POST['date']
+            university_cn = body['university_cn']
+            university_en = body['university_en']
+            country_cn = body['country_cn']
+            country_en = body['country_en']
+            job_cn = body['job_cn']
+            job_en = body['job_en']
+            description = body['description']
+            title_cn = body['title_cn']
+            title_en = body['title_en']
+            label_physical_geo = body['label_physical_geo']
+            label_human_geo = body['label_human_geo']
+            label_urban = body['label_urban']
+            label_gis = body['label_gis']
+            label_rs = body['label_rs']
+            label_gnss = body['label_gnss']
+            date = body['date']
 
             # Insert the new post
             # added_post = GISource(job_title = job_title, country = country)
             GISource.objects.create(university_cn=university_cn, university_en = university_en, country_cn=country_cn, country_en=country_en, job_cn=job_cn, job_en=job_en, description=description, title_cn=title_cn, title_en=title_en, label_physical_geo=label_physical_geo, label_human_geo=label_human_geo, label_urban=label_urban, label_gis=label_gis, label_rs=label_rs, label_gnss=label_gnss, date=date)
             return JsonResponse({"status": "200", "msg": "public post successfully!"})
+        else:
+            return JsonResponse({"status": "400", "msg": "Please check the params"})
     else:
         return JsonResponse({"status": "400", "msg": "Please check the params"})
 
