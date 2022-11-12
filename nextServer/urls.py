@@ -16,10 +16,12 @@ Including another URLconf
 Router system: url --- view
 """
 from django.contrib import admin
-from django.urls import path, re_path, include
+from django.urls import include, path, re_path
 from rest_framework.routers import DefaultRouter
-from . import views
+
 from app.views import UserListView
+
+from . import views
 
 router = DefaultRouter()
 router.register('api/manage/user', UserListView)
