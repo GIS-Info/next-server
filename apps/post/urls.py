@@ -11,7 +11,8 @@ urlpatterns = [
     path('manage/delete/<int:post_id>', user_views.delete_post, name = 'delete_post'),
 
     path('post_jobtitle/', user_views.get_posts_by_jobtitle, name = 'get_posts_by_jobtitle'),
-    path('post_querystring/', user_views.get_posts_by_querystring, name = 'get_posts_by_querystring'),
+    #这里querystring接口没有尾部url原因是改为了post请求以解决中文url乱码问题
+    path('post_querystring', user_views.get_posts_by_querystring, name = 'get_posts_by_querystring'),
     path('post_major/', user_views.get_posts_by_major, name = 'get_posts_by_major'),
     path('post_closedate/', user_views.get_posts_by_enddate, name = 'get_posts_by_enddate')
 ]
