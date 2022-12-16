@@ -9,7 +9,6 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-
 from .models import GISource
 from .serializer import GISourceSerializer
 
@@ -48,43 +47,79 @@ def get_posts_by_jobtitle(request):
     else:
         return JsonResponse({"status": "0", "msg": "Please check the request method"})
 
-@api_view(['GET'])
+#change get request to post
+@api_view(['POST'])
 def get_posts_by_querystring(request):
     """
         Get all the posts with selected country or university
 
         e.g.
         Query by country:
-        http://127.0.0.1:8000/api/post_querystring?queryString=USA
+        http://127.0.0.1:8000/api/post_querystring
 
         Query by university:
-        http://127.0.0.1:8000/api/post_querystring?queryString=UCSB
+        http://127.0.0.1:8000/api/post_querystring
 
         """
-    if request.method == "GET":
-        if len(request.GET['queryString']):
-            queryString = request.GET['queryString']
-            pageSize = 10
-            pageIndex = 1
+    if request.method == "POST":
+        queryString = request.data.get('queryString', '')
+        pageSize = request.data.get('pageSize', 10)
+        pageIndex = request.data.get('pageIndex', 1)
 
-            if 'pageSize' in request.GET:
-                pageSize = request.GET['pageSize']
-            if 'pageIndex' in request.GET:
-                pageIndex = request.GET['pageIndex']
 
-            record = GISource.objects.filter(
-                queryString__contains=queryString
-            )
-            paginator = Paginator(record, pageSize)
-            page_content = paginator.page(pageIndex)
-            serializer = GISourceSerializer(page_content, many=True)
-            print(serializer.data)
+        record = GISource.objects.filter(
+            title_cn__icontains=queryString
+        ).union(GISource.objects.filter(
+            title_cn__icontains=queryString
+        )).order_by('-date')
+        paginator = Paginator(record, pageSize)
+        page_content = paginator.page(pageIndex)
+        count = paginator.count
+        serializer = GISourceSerializer(page_content, many=True)
 
-            return Response(serializer.data)
-        else:
-            return JsonResponse({"status": "1", "msg": "Please check the params"})
+        return Response({"code": 0, "data": serializer.data, "count": count})
     else:
         return JsonResponse({"status": "0", "msg": "Please check the request method"})
+
+# @api_view(['GET'])
+# def get_posts_by_querystring(request):
+#     """
+#         Get all the posts with selected country or university
+
+#         e.g.
+#         Query by country:
+#         http://127.0.0.1:8000/api/post_querystring?queryString=USA
+
+#         Query by university:
+#         http://127.0.0.1:8000/api/post_querystring?queryString=UCSB
+
+#         """
+#     if request.method == "GET":
+#         if len(request.GET['queryString']):
+#             queryString = request.GET['queryString']
+#             pageSize = 10
+#             pageIndex = 1
+
+#             if 'pageSize' in request.GET:
+#                 pageSize = request.GET['pageSize']
+#             if 'pageIndex' in request.GET:
+#                 pageIndex = request.GET['pageIndex']
+
+#             record = GISource.objects.filter(
+#                 title_en__icontains=queryString,
+#                 title_cn__icontains=queryString
+#             ).order_by('-date')
+#             paginator = Paginator(record, pageSize)
+#             page_content = paginator.page(pageIndex)
+#             count = paginator.count
+#             serializer = GISourceSerializer(page_content, many=True)
+#             print(serializer.data)
+
+#             return Response({"code": 0, "data": serializer.data, "count": count})
+#         else:
+#             return JsonResponse({"status": "1", "msg": "Please check the params"})
+#     else:
+#         return JsonResponse({"status": "0", "msg": "Please check the request method"})
 
 @api_view(['GET'])
 def get_posts_by_major(request):
@@ -133,6 +168,7 @@ def get_posts_by_enddate(request):
                 year = request.GET['year']
                 month = request.GET['month'] # should be 01, 02, ...10, 11, 12
                 print(year)
+                print(month)
                 # year_month = year + "-" + month
 
                 pageSize = 10
@@ -144,17 +180,19 @@ def get_posts_by_enddate(request):
                     pageIndex = request.GET['pageIndex']
 
                 record = GISource.objects.filter(
-                    close_date__year = year,
-                    close_date__month = month
-                )
+                    # close_date__year = year,
+                    # close_date__month = month
+                    date__year=year,
+                    date__month=month,
+                ).order_by('-date')
                 paginator = Paginator(record, pageSize)
                 page_content = paginator.page(pageIndex)
+                count = paginator.count
                 serializer = GISourceSerializer(page_content, many=True)
-                print(serializer.data)
 
-                return Response(serializer.data)
+                return Response({"code": 0, "data": serializer.data, "count": count})
         else:
-            return JsonResponse({"status": "1", "msg": "Please check the params"})
+            return JsonResponse({"code": 1, "msg": "wrong request method"})
 
 @api_view(['GET'])
 def get_post_list(request):
