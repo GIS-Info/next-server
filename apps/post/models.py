@@ -26,6 +26,8 @@ class GISource(models.Model):
     label_rs = models.SmallIntegerField()
     label_gnss = models.SmallIntegerField()
     date = models.DateField()
+    is_public = models.SmallIntegerField()
+    is_deleted = models.SmallIntegerField()
 
     '''
     event_id = models.AutoField(primary_key = True)

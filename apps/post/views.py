@@ -1,14 +1,18 @@
 import json
 import logging
+
 # 生成一个以当前文件名为名字的logger实例
 logger = logging.getLogger('django')
 
-from django.core import serializers
-from django.core.paginator import EmptyPage, Paginator
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render
+# from django.core import serializers
+# from django.core.paginator import EmptyPage
+from django.core.paginator import Paginator
+# from django.http import HttpResponse
+from django.http import JsonResponse
+# from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+
 from .models import GISource
 from .serializer import GISourceSerializer
 
@@ -68,9 +72,13 @@ def get_posts_by_querystring(request):
 
 
         record = GISource.objects.filter(
-            title_cn__icontains=queryString
+            title_cn__icontains=queryString,
+            is_public=1,
+            is_deleted=0
         ).union(GISource.objects.filter(
-            title_cn__icontains=queryString
+            title_cn__icontains=queryString,
+            is_public=1,
+            is_deleted=0
         )).order_by('-date')
         paginator = Paginator(record, pageSize)
         page_content = paginator.page(pageIndex)
@@ -184,6 +192,8 @@ def get_posts_by_enddate(request):
                     # close_date__month = month
                     date__year=year,
                     date__month=month,
+                    is_public=1,
+                    is_deleted=0
                 ).order_by('-date')
                 paginator = Paginator(record, pageSize)
                 page_content = paginator.page(pageIndex)
@@ -204,7 +214,10 @@ def get_post_list(request):
 
     """
     if request.method == "GET":
-        params = {}
+        params = {
+            'is_public': 1,
+            'is_deleted': 0,
+        }
         pageSize = 10
         pageIndex = 1
 
@@ -275,14 +288,15 @@ def get_post_by_id(request, post_id):
 
     """
     if request.method == 'GET':
-        # key_flag = len(request.GET['eventID'])
-        # if key_flag:
-        #     record = GISource.objects.filter(event_id=post_id)
-        #     serializer = GISourceSerializer(record, many=True)
         if post_id:
             record = GISource.objects.filter(event_id=post_id)
             serializer = GISourceSerializer(record, many=True)
-            return Response(serializer.data)
+            if serializer.data[0]['is_public'] == 0:
+                return JsonResponse({"code": 3, "msg": "post is not public"})
+            elif serializer.data[0]['is_deleted'] == 1:
+                return JsonResponse({"code": 4, "msg": "post is deleted"})
+            else:
+                return Response(serializer.data)
         else:
             return JsonResponse({"code": 2, "msg": "wrong post id"})
 
