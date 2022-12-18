@@ -243,6 +243,74 @@ def get_post_list(request):
     else:
         return JsonResponse({"code": 1, "msg": "wrong request method"})
 
+@api_view(['GET'])
+def manage_get_post_list(request):
+    if request.method == "GET":
+        params = {}
+        pageSize = 10
+        pageIndex = 1
+
+        for key in request.GET:
+            if key == 'pageSize':
+                pageSize = request.GET[key]
+            elif key == 'pageIndex':
+                pageIndex = request.GET[key]
+            else:
+                params[key] = request.GET[key]
+        if params:
+            record = GISource.objects.filter(**params).order_by('-event_id')
+        else:
+            record = GISource.objects.all().order_by('-event_id')
+
+        paginator = Paginator(record, pageSize)
+        page_content = paginator.page(pageIndex)
+        #条数，用于前端显示页码
+        count = paginator.count
+        serializer = GISourceSerializer(page_content, many=True)
+        return Response({"code": 0, "data": serializer.data, "count": count})
+    else:
+        return JsonResponse({"code": 1, "msg": "wrong request method"})
+
+# GET: 管理员获取帖子内容 
+# POST: 管理员更新帖子内容 
+# DELETE: 管理员删除帖子
+@api_view(['GET', 'POST', 'DELETE'])
+def manage_post(request,post_id):
+    try: 
+        record = GISource.objects.get(event_id=post_id)
+    except: 
+        return JsonResponse({"code": 5, "msg": "no such post"})
+    if request.method == 'GET':
+        serializer = GISourceSerializer(record)
+        return Response(serializer.data)
+    elif request.method == 'POST': 
+        body = json.loads(request.body)
+        record_serializer = GISourceSerializer(record, data=body)
+        logger.error('1')
+        if record_serializer.is_valid():
+            logger.error('2')
+            record_serializer.save()
+            logger.error('3')
+            return JsonResponse({"code": 0, "msg": "success"})
+        logger.error('4')
+        logger.error(record_serializer.errors)
+        return JsonResponse({"code": 500, "msg": 'record_serializer not pass'})
+    elif request.method == 'DELETE': 
+        record.is_deleted=1
+        record.save()
+        return JsonResponse({"code": 0, "msg": "success"})
+    else:
+        return JsonResponse({"code": 1, "msg": "wrong request method"})
+
+# POST: 管理员改变帖子开发状态，即 is_public 字段值
+@api_view(['POST'])
+def manage_post_status(request):
+    body = json.loads(request.body)
+    event_id = body['event_id']
+    record = GISource.objects.get(event_id=event_id)
+    record.is_public = body['is_public']
+    record.save()
+    return JsonResponse({"code": 0, "msg": "success"})
 
 # this is deprecated
 @api_view(['GET'])
