@@ -20,7 +20,6 @@ from django.urls import include, path, re_path
 from rest_framework.routers import DefaultRouter
 
 from app.views import UserListView
-from django.conf import settings
 
 from . import views
 
@@ -35,6 +34,3 @@ urlpatterns = [
     path('api/', include("apps.post.urls")),
     path('', include('accounts.urls')),
 ]
-if settings.DEBUG:
-    urlpatterns += [path('', include('app.apis.swagger.urls')),
-                    ]
