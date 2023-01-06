@@ -29,4 +29,14 @@ class LoginAPI(KnoxLoginView):
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
         login(request, user)
-        return super(LoginAPI, self).post(request, format=None)
+        # serialize user data and include it in the response
+        user_data = UserSerializer(user, context=self.get_serializer_context()).data
+        return Response({
+            "user": user_data,
+            "token": AuthToken.objects.create(user)[1]
+        })
+
+    def get_serializer_context(self):
+        pass
+
+        
