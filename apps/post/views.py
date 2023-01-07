@@ -1,6 +1,9 @@
 import json
 import logging
 
+from knox.auth import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated, AllowAny
+
 # 生成一个以当前文件名为名字的logger实例
 logger = logging.getLogger('django')
 
@@ -10,7 +13,7 @@ from django.core.paginator import Paginator
 # from django.http import HttpResponse
 from django.http import JsonResponse
 # from django.shortcuts import render
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 
 from .models import GISource
@@ -19,6 +22,8 @@ from .serializer import GISourceSerializer
 
 # Create your views here.
 @api_view(['GET'])
+@permission_classes((AllowAny,))
+@authentication_classes((TokenAuthentication,))
 def get_posts_by_jobtitle(request):
     """
     Get all the posts with selected job title
@@ -38,7 +43,7 @@ def get_posts_by_jobtitle(request):
                 pageIndex = request.GET['pageIndex']
 
             record = GISource.objects.filter(
-                job_title = jobTitle
+                job_title=jobTitle
             )
             paginator = Paginator(record, pageSize)
             page_content = paginator.page(pageIndex)
@@ -51,8 +56,11 @@ def get_posts_by_jobtitle(request):
     else:
         return JsonResponse({"status": "0", "msg": "Please check the request method"})
 
-#change get request to post
+
+# change get request to post
 @api_view(['POST'])
+@permission_classes((AllowAny,))
+@authentication_classes((TokenAuthentication,))
 def get_posts_by_querystring(request):
     """
         Get all the posts with selected country or university
@@ -69,7 +77,6 @@ def get_posts_by_querystring(request):
         queryString = request.data.get('queryString', '')
         pageSize = request.data.get('pageSize', 10)
         pageIndex = request.data.get('pageIndex', 1)
-
 
         record = GISource.objects.filter(
             title_cn__icontains=queryString,
@@ -88,6 +95,7 @@ def get_posts_by_querystring(request):
         return Response({"code": 0, "data": serializer.data, "count": count})
     else:
         return JsonResponse({"status": "0", "msg": "Please check the request method"})
+
 
 # @api_view(['GET'])
 # def get_posts_by_querystring(request):
@@ -130,6 +138,8 @@ def get_posts_by_querystring(request):
 #         return JsonResponse({"status": "0", "msg": "Please check the request method"})
 
 @api_view(['GET'])
+@permission_classes((AllowAny,))
+@authentication_classes((TokenAuthentication,))
 def get_posts_by_major(request):
     """
             Get all the posts by major
@@ -150,7 +160,7 @@ def get_posts_by_major(request):
                 pageIndex = request.GET['pageIndex']
 
             record = GISource.objects.filter(
-                label__contains = major
+                label__contains=major
             )
             paginator = Paginator(record, pageSize)
             page_content = paginator.page(pageIndex)
@@ -163,7 +173,10 @@ def get_posts_by_major(request):
     else:
         return JsonResponse({"status": "0", "msg": "Please check the request method"})
 
+
 @api_view(['GET'])
+@permission_classes((AllowAny,))
+@authentication_classes((TokenAuthentication,))
 def get_posts_by_enddate(request):
     """
     Get post by closed date
@@ -174,7 +187,7 @@ def get_posts_by_enddate(request):
         if len(request.GET['year']):
             if len(request.GET['month']):
                 year = request.GET['year']
-                month = request.GET['month'] # should be 01, 02, ...10, 11, 12
+                month = request.GET['month']  # should be 01, 02, ...10, 11, 12
                 print(year)
                 print(month)
                 # year_month = year + "-" + month
@@ -204,7 +217,10 @@ def get_posts_by_enddate(request):
         else:
             return JsonResponse({"code": 1, "msg": "wrong request method"})
 
+
 @api_view(['GET'])
+@permission_classes((AllowAny,))
+@authentication_classes((TokenAuthentication,))
 def get_post_list(request):
     """
         Get all the posts with given settings
@@ -235,7 +251,7 @@ def get_post_list(request):
 
         paginator = Paginator(record, pageSize)
         page_content = paginator.page(pageIndex)
-        #条数，用于前端显示页码
+        # 条数，用于前端显示页码
         count = paginator.count
         serializer = GISourceSerializer(page_content, many=True)
         # print(serializer.data)
@@ -243,7 +259,10 @@ def get_post_list(request):
     else:
         return JsonResponse({"code": 1, "msg": "wrong request method"})
 
+
 @api_view(['GET'])
+@permission_classes((IsAuthenticated,))
+@authentication_classes((TokenAuthentication,))
 def manage_get_post_list(request):
     if request.method == "GET":
         params = {}
@@ -264,26 +283,29 @@ def manage_get_post_list(request):
 
         paginator = Paginator(record, pageSize)
         page_content = paginator.page(pageIndex)
-        #条数，用于前端显示页码
+        # 条数，用于前端显示页码
         count = paginator.count
         serializer = GISourceSerializer(page_content, many=True)
         return Response({"code": 0, "data": serializer.data, "count": count})
     else:
         return JsonResponse({"code": 1, "msg": "wrong request method"})
 
-# GET: 管理员获取帖子内容 
+
+# GET: 管理员获取帖子内容
 # POST: 管理员更新帖子内容 
 # DELETE: 管理员删除帖子
 @api_view(['GET', 'POST', 'DELETE'])
-def manage_post(request,post_id):
-    try: 
+@permission_classes((IsAuthenticated,))
+@authentication_classes((TokenAuthentication,))
+def manage_post(request, post_id):
+    try:
         record = GISource.objects.get(event_id=post_id)
-    except: 
+    except:
         return JsonResponse({"code": 5, "msg": "no such post"})
     if request.method == 'GET':
         serializer = GISourceSerializer(record)
         return Response(serializer.data)
-    elif request.method == 'POST': 
+    elif request.method == 'POST':
         body = json.loads(request.body)
         record_serializer = GISourceSerializer(record, data=body)
         logger.error('1')
@@ -295,15 +317,18 @@ def manage_post(request,post_id):
         logger.error('4')
         logger.error(record_serializer.errors)
         return JsonResponse({"code": 500, "msg": 'record_serializer not pass'})
-    elif request.method == 'DELETE': 
-        record.is_deleted=1
+    elif request.method == 'DELETE':
+        record.is_deleted = 1
         record.save()
         return JsonResponse({"code": 0, "msg": "success"})
     else:
         return JsonResponse({"code": 1, "msg": "wrong request method"})
 
+
 # POST: 管理员改变帖子开发状态，即 is_public 字段值
 @api_view(['POST'])
+@permission_classes((IsAuthenticated,))
+@authentication_classes((TokenAuthentication,))
 def manage_post_status(request):
     body = json.loads(request.body)
     event_id = body['event_id']
@@ -312,8 +337,11 @@ def manage_post_status(request):
     record.save()
     return JsonResponse({"code": 0, "msg": "success"})
 
+
 # this is deprecated
 @api_view(['GET'])
+@permission_classes((AllowAny,))
+@authentication_classes((TokenAuthentication,))
 def get_post_list_deprecated(request):
     """
         Get all the posts with given settings
@@ -327,10 +355,10 @@ def get_post_list_deprecated(request):
                    & len(request.GET['country']) & len(request.GET['label']) & len(request.GET['queryString'])
 
         if key_flag:
-            pageSize = request.GET['pageSize'] # 有package
+            pageSize = request.GET['pageSize']  # 有package
             pageIndex = request.GET['pageIndex']
-            jobTitle = request.GET['jobTitle'] #job title char
-            country = request.GET['country'] #country_id
+            jobTitle = request.GET['jobTitle']  # job title char
+            country = request.GET['country']  # country_id
             # closeDate = request.GET['closeDate'] # 最后被创建的时间
             label = request.GET['label']
             queryString = request.GET['queryString']
@@ -339,8 +367,8 @@ def get_post_list_deprecated(request):
 
             # Get dataset --> 如果确定好获取的参数，就可以用这一部分，将filter中的参数替换成上面的, 需要检查下下面的类型是否对应, 需要进一步测试
             record = GISource.objects.filter(
-                country = country,
-                job_title = jobTitle
+                country=country,
+                job_title=jobTitle
             )
             paginator = Paginator(record, pageSize)
             page_content = paginator.page(pageIndex)
@@ -348,7 +376,10 @@ def get_post_list_deprecated(request):
             print(serializer.data)
             return Response(serializer.data)
 
+
 @api_view(['GET'])
+@permission_classes((AllowAny,))
+@authentication_classes((TokenAuthentication,))
 def get_post_by_id(request, post_id):
     """Read: Get a post with given event_id
 
@@ -368,7 +399,10 @@ def get_post_by_id(request, post_id):
         else:
             return JsonResponse({"code": 2, "msg": "wrong post id"})
 
+
 @api_view(['POST'])
+@permission_classes((IsAuthenticated,))
+@authentication_classes((TokenAuthentication,))
 def update_post(request, post_id):
     """Update: update the post content
     api/manage/post/<post_id>
@@ -403,7 +437,10 @@ def update_post(request, post_id):
         else:
             return JsonResponse({"status": "300", "msg": "Post is not existed, fail to update.."})
 
+
 @api_view(['DELETE'])
+@permission_classes((IsAuthenticated,))
+@authentication_classes((TokenAuthentication,))
 def delete_post(request, post_id):
     """
     e.g. http://127.0.0.1:8000/api/manage/delete/44
@@ -418,7 +455,10 @@ def delete_post(request, post_id):
         else:
             return JsonResponse({"status": "300", "msg": "Post doesnot exist, fail to delete"})
 
+
 @api_view(['POST'])
+@permission_classes((AllowAny,))
+@authentication_classes((TokenAuthentication,))
 def add_post(request):
     """Create: Add new post
     api/post/add
@@ -451,14 +491,13 @@ def add_post(request):
 
             # Insert the new post
             # added_post = GISource(job_title = job_title, country = country)
-            GISource.objects.create(university_cn=university_cn, university_en = university_en, country_cn=country_cn, country_en=country_en, job_cn=job_cn, job_en=job_en, description=description, title_cn=title_cn, title_en=title_en, label_physical_geo=label_physical_geo, label_human_geo=label_human_geo, label_urban=label_urban, label_gis=label_gis, label_rs=label_rs, label_gnss=label_gnss, date=date)
+            GISource.objects.create(university_cn=university_cn, university_en=university_en, country_cn=country_cn,
+                                    country_en=country_en, job_cn=job_cn, job_en=job_en, description=description,
+                                    title_cn=title_cn, title_en=title_en, label_physical_geo=label_physical_geo,
+                                    label_human_geo=label_human_geo, label_urban=label_urban, label_gis=label_gis,
+                                    label_rs=label_rs, label_gnss=label_gnss, date=date)
             return JsonResponse({"status": "200", "msg": "public post successfully!"})
         else:
             return JsonResponse({"status": "400", "msg": "Please check the params"})
     else:
         return JsonResponse({"status": "400", "msg": "Please check the params"})
-
-
-
-
-
