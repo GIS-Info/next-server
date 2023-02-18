@@ -1,6 +1,5 @@
 .idea
-.env.*local
-.env.*prod
+.env.*
 # 开发用包管理工具
 poetry.lock
 pyproject.toml
