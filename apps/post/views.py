@@ -325,7 +325,7 @@ def manage_post(request, post_id):
         return JsonResponse({"code": 1, "msg": "wrong request method"})
 
 
-# POST: 管理员改变帖子开发状态，即 is_public 字段值
+# POST: 管理员改变帖子开放状态，即 is_public 字段值
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
 @authentication_classes((TokenAuthentication,))
@@ -488,6 +488,8 @@ def add_post(request):
             label_rs = body['label_rs']
             label_gnss = body['label_gnss']
             date = body['date']
+            is_public = body['is_public']
+            is_deleted = body['is_deleted']
 
             # Insert the new post
             # added_post = GISource(job_title = job_title, country = country)
@@ -495,7 +497,7 @@ def add_post(request):
                                     country_en=country_en, job_cn=job_cn, job_en=job_en, description=description,
                                     title_cn=title_cn, title_en=title_en, label_physical_geo=label_physical_geo,
                                     label_human_geo=label_human_geo, label_urban=label_urban, label_gis=label_gis,
-                                    label_rs=label_rs, label_gnss=label_gnss, date=date)
+                                    label_rs=label_rs, label_gnss=label_gnss, date=date, is_public=is_public, is_deleted=is_deleted)
             return JsonResponse({"status": "200", "msg": "public post successfully!"})
         else:
             return JsonResponse({"status": "400", "msg": "Please check the params"})
