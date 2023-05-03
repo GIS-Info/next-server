@@ -265,7 +265,9 @@ def get_post_list(request):
 @authentication_classes((TokenAuthentication,))
 def manage_get_post_list(request):
     if request.method == "GET":
-        params = {}
+        params = {
+            'is_deleted': 0,
+        }
         pageSize = 10
         pageIndex = 1
 
