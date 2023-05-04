@@ -61,6 +61,8 @@ class GISource(models.Model):
         managed = False
         db_table = 'GISource'
 
+
+
 '''
 class Countries(models.Model):
     Country_ID = models.AutoField(primary_key = True)
@@ -73,3 +75,52 @@ class Countries(models.Model):
         db_table = 'Countries'
 '''
 
+
+class NewUniversity(models.Model):
+    Universities_id = models.AutoField(primary_key=True)
+    University_Name_CN = models.CharField(max_length=255)
+    University_Name_EN = models.CharField(max_length=255)
+    University_Name_Local = models.CharField(max_length=255)
+    City = models.CharField(max_length=255)
+    URL = models.CharField(max_length=512)
+    University_Abbr = models.CharField(max_length=255)
+    University_Other_Name = models.CharField(max_length=255)
+    Description_CN = models.TextField()
+    Description_EN = models.TextField()
+    Unit_CN = models.CharField(max_length=255)
+    Unit_EN = models.CharField(max_length=255)
+    Lon = models.FloatField()
+    Lat = models.FloatField()
+
+    class Meta:
+        managed = False
+        db_table = 'new_Universities'
+
+    def __str__(self):
+        return self.University_Name_EN
+
+
+class Cities(models.Model):
+    City_id = models.AutoField(primary_key=True)
+    City_Name_CN = models.CharField(max_length=255)
+    City_Name_EN = models.CharField(max_length=255)
+    Country = models.CharField(max_length=255)
+    Lat = models.CharField(max_length=255)
+    Lon = models.CharField(max_length=255)
+    City_Name_Other = models.CharField(max_length=255)
+    f7 = models.CharField(max_length=255)
+
+    class Meta:
+        managed = False
+        db_table = 'new_city'
+
+class Countries (models.Model):
+    Country_id = models.AutoField(primary_key=True)
+    f4 = models.CharField(max_length=255)
+    Continent = models.CharField(max_length=255)
+    Country_Name_CN = models.CharField(max_length=255)
+    Country_Name_EN = models.CharField(max_length=255)
+
+    class Meta:
+        managed = False
+        db_table = 'new_country'
