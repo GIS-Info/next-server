@@ -16,8 +16,10 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 
-from .models import GISource
-from .serializer import GISourceSerializer
+from .models import GISource, NewUniversity,Cities,Countries
+from .serializer import UniversitySerializer, GISourceSerializer,CitySerializer
+from .serializer import UniCitySerializer,CountrySerializer
+
 
 
 # Create your views here.
@@ -505,3 +507,127 @@ def add_post(request):
             return JsonResponse({"status": "400", "msg": "Please check the params"})
     else:
         return JsonResponse({"status": "400", "msg": "Please check the params"})
+
+
+    
+# @api_view(['GET'])
+# @permission_classes((AllowAny,))
+# @authentication_classes((TokenAuthentication,))
+# def get_universities(request):
+#     if request.method == "GET":
+#         universities = NewUniversity.objects.all()
+#         serializer = UniversitySerializer(universities, many=True)
+#         return Response(serializer.data)
+
+# from django.http import JsonResponse
+# from rest_framework.decorators import api_view
+# from .models import NewUniversity, Cities
+
+# @api_view(['GET'])
+# @permission_classes((AllowAny,))
+# @authentication_classes((TokenAuthentication,))
+# def get_universities(request):
+#     pageSize = 10
+#     pageIndex = 1
+
+#     if 'pageSize' in request.GET:
+#         pageSize = int(request.GET['pageSize'])
+#     if 'pageIndex' in request.GET:
+#         pageIndex = int(request.GET['pageIndex'])
+
+#     universities = NewUniversity.objects.all()
+#     universities_list = []
+
+#     for university in universities:
+#         try:
+#             city = Cities.objects.filter(City_Name_EN=university.City).first()
+#         except Cities.DoesNotExist:
+#             continue
+
+#         university_info = {
+#             'id': university.id,
+#             'University_Name_CN': university.University_Name_CN,
+#             'University_Name_EN': university.University_Name_EN,
+#             'University_Name_Local': university.University_Name_Local,
+#             'URL': university.URL,
+#             'University_Abbr': university.University_Abbr,
+#             'University_Other_Name': university.University_Other_Name,
+#             'Description_EN': university.Description_EN,
+#             'City': university.City,
+#             'Country': city.Country if city else None,
+#             'Description_CN': university.Description_CN,
+#             'Unit_EN': university.Unit_EN,
+#             'Unit_CN': university.Unit_CN
+#         }
+#         universities_list.append(university_info)
+
+#     paginator = Paginator(universities_list, pageSize)
+#     page_content = paginator.page(pageIndex)
+#     serializer = UniCitySerializer(page_content, many=True)
+
+#     return Response(serializer.data)
+
+
+# @api_view(['GET', 'POST'])
+# @permission_classes((AllowAny,))
+# @authentication_classes((TokenAuthentication,))
+# def get_universities(request):
+#     pageSize = 10
+#     pageIndex = 1
+
+#     if 'pageSize' in request.GET:
+#         pageSize = int(request.GET['pageSize'])
+#     if 'pageIndex' in request.GET:
+#         pageIndex = int(request.GET['pageIndex'])
+
+#     universities = NewUniversity.objects.select_related('city')
+#     universities_list = []
+
+#     for university in universities:
+
+#         # city = Cities.objects.filter(City_Name_EN=university.City).first()
+#         # city = Cities.objects.get(City_Name_EN=university.City)
+
+
+#         university_info = {
+#             'id': university.id,
+#             'University_Name_CN': university.University_Name_CN,
+#             'University_Name_EN': university.University_Name_EN,
+#             'University_Name_Local': university.University_Name_Local,
+#             'URL': university.URL,
+#             'University_Abbr': university.University_Abbr,
+#             'University_Other_Name': university.University_Other_Name,
+#             'Description_EN': university.Description_EN,
+#             'City': university.City,
+#             'Country': university.City.Country if university.City else "Not found",
+#             'Description_CN': university.Description_CN,
+#             'Unit_EN': university.Unit_EN,
+#             'Unit_CN': university.Unit_CN
+#         }
+
+#         universities_list.append(university_info)
+
+#     paginator = Paginator(universities_list, pageSize)
+#     page_content = paginator.page(pageIndex)
+#     serializer = UniCitySerializer(page_content, many=True)
+
+#     return Response(serializer.data)
+
+@api_view(['GET'])
+def get_universities(request):
+    universities = NewUniversity.objects.all()
+    serializer = UniversitySerializer(universities, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def get_cities(request):
+    cities = Cities.objects.all()
+    serializer = CitySerializer(cities, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def get_countries(request):
+    countries = Countries.objects.all()
+    serializer = CountrySerializer(countries, many=True)
+    return Response(serializer.data)
