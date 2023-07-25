@@ -10,9 +10,14 @@ urlpatterns = [
     path('post/add/', user_views.add_post, name = 'add_post'),
 
     # 使用university的接口
-    path('post/universities/', views.get_universities, name='get_universities'),
-    path('post/cities/', views.get_cities, name='get_cities'),
-    path('post/countries/', views.get_countries, name='get_countries'),
+    path('uniInfo/universities/', views.get_universities, name='get_universities'),
+    path('uniInfo/cities/', views.get_cities, name='get_cities'),
+    path('uniInfo/countries/', views.get_countries, name='get_countries'),
+    path('uniInfo/get_continent_data/<str:continent>', views.get_continent_data, name='get_continent_data'),
+    path('uniInfo/get_country_data/<str:country>', views.get_country_data, name='get_country_data'),
+
+
+    # 这里querystring接口没有尾部url原因是改为了post请求以解决中文url乱码问题
 
     # 这里querystring接口没有尾部url原因是改为了post请求以解决中文url乱码问题
     path('post_querystring', user_views.get_posts_by_querystring, name = 'get_posts_by_querystring'),
