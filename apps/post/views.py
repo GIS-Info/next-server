@@ -19,7 +19,7 @@ from rest_framework.response import Response
 from .models import GISource, NewUniversity,Cities,Countries
 from .serializer import UniversitySerializer, GISourceSerializer,CitySerializer
 from .serializer import UniCitySerializer,CountrySerializer
-
+from django.db import connection
 
 
 # Create your views here.
@@ -631,3 +631,55 @@ def get_countries(request):
     countries = Countries.objects.all()
     serializer = CountrySerializer(countries, many=True)
     return Response(serializer.data)
+
+@api_view(['GET'])
+def get_continent_data(request, continent):
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT * 
+            FROM new_Universities u 
+            JOIN new_city c ON u.City = c.City_Name_EN
+            JOIN new_country co ON c.Country = co.Country_Name_CN
+            WHERE co.Continent = %s
+        """, [continent])
+        rows = cursor.fetchall()
+
+    data = []
+    for row in rows:
+        data.append({
+            'University_Name_CN': row[0],
+            'id': row[13],
+            'Country': row[17],
+            'University_Abbr': row[5],
+            'Description_CN': row[7],
+            'Unit_CN': row[9],
+            'URL': row[4],
+        })
+
+    return Response(data)
+
+@api_view(['GET'])
+def get_country_data(request, country):
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT * 
+            FROM new_Universities u 
+            JOIN new_city c ON u.City = c.City_Name_EN
+            JOIN new_country co ON c.Country = co.Country_Name_CN
+            WHERE co.Country_Name_CN = %s
+        """, [country])
+        rows = cursor.fetchall()
+
+    data = []
+    for row in rows:
+        data.append({
+            'University_Name_CN': row[0],
+            'id': row[13],
+            'Country': row[17],
+            'University_Abbr': row[5],
+            'Description_CN': row[7],
+            'Unit_CN': row[9],
+            'URL': row[4],
+        })
+
+    return Response(data)
