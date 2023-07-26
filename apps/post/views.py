@@ -648,12 +648,18 @@ def get_continent_data(request, continent):
     for row in rows:
         data.append({
             'University_Name_CN': row[0],
+            'University_Name_EN': row[1],
+            'University_Name_Local': row[2],
+            'City': row[3],
+            'URL': row[4],
+            'University_Abbr': row[5],
+            'University_Other_Name': row[6],
+            'Description_CN': row[7],
+            'Description_EN': row[8],
+            'Unit_CN': row[9],
+            'Unit_EN': row[10],
             'id': row[13],
             'Country': row[17],
-            'University_Abbr': row[5],
-            'Description_CN': row[7],
-            'Unit_CN': row[9],
-            'URL': row[4],
         })
 
     return Response(data)
@@ -674,12 +680,18 @@ def get_country_data(request, country):
     for row in rows:
         data.append({
             'University_Name_CN': row[0],
+            'University_Name_EN': row[1],
+            'University_Name_Local': row[2],
+            'City': row[3],
+            'URL': row[4],
+            'University_Abbr': row[5],
+            'University_Other_Name': row[6],
+            'Description_CN': row[7],
+            'Description_EN': row[8],
+            'Unit_CN': row[9],
+            'Unit_EN': row[10],
             'id': row[13],
             'Country': row[17],
-            'University_Abbr': row[5],
-            'Description_CN': row[7],
-            'Unit_CN': row[9],
-            'URL': row[4],
         })
 
     return Response(data)
