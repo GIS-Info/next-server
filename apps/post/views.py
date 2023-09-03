@@ -659,7 +659,7 @@ def get_continent_data(request, continent):
             'Unit_CN': row[9],
             'Unit_EN': row[10],
             'id': row[13],
-            'Country': row[17],
+            'Country': row[16],
         })
 
     return Response(data)
