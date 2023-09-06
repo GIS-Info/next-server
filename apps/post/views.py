@@ -21,6 +21,9 @@ from .serializer import UniversitySerializer, GISourceSerializer,CitySerializer
 from .serializer import UniCitySerializer,CountrySerializer
 from django.db import connection
 
+//使用Q对象来组合多个查询条件
+from django.db.models import Q
+
 
 # Create your views here.
 @api_view(['GET'])
@@ -81,14 +84,13 @@ def get_posts_by_querystring(request):
         pageIndex = request.data.get('pageIndex', 1)
 
         record = GISource.objects.filter(
+            Q(title_cn__icontains=queryString) |
+            Q(title_en__icontains=queryString) |
+            Q(description__icontains=queryString),
             title_cn__icontains=queryString,
             is_public=1,
             is_deleted=0
-        ).union(GISource.objects.filter(
-            title_cn__icontains=queryString,
-            is_public=1,
-            is_deleted=0
-        )).order_by('-date')
+        ).order_by('-date')
         paginator = Paginator(record, pageSize)
         page_content = paginator.page(pageIndex)
         count = paginator.count
