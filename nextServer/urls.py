@@ -33,6 +33,7 @@ urlpatterns = [
     path('hello/', views.hello_world),
     path('', include(router.urls)),
     path('api/', include("apps.post.urls")),
+    path('api/', include("apps.school.urls")),
     path('', include('accounts.urls')),
 ]
 if settings.DEBUG:
