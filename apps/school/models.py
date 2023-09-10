@@ -29,51 +29,9 @@ class GISource(models.Model):
     is_public = models.SmallIntegerField()
     is_deleted = models.SmallIntegerField()
 
-    '''
-    event_id = models.AutoField(primary_key = True)
-    university_fk = models.IntegerField()
-    required_degree = models.IntegerField()
-    contact1 = models.CharField(max_length=40)
-    email1 = models.CharField(max_length=40)
-    contact2 = models.CharField(max_length=40)
-    email2 = models.CharField(max_length=40)
-    url = models.CharField(max_length=255)
-    post_date = models.DateField()
-    close_date = models.DateField()
-    start_date = models.DateField()
-    job_fk = models.IntegerField()
-    has_close_date = models.SmallIntegerField(max_length=1)
-    number_of_vacancy = models.IntegerField()
-    vacancy_name = models.CharField(max_length=20)
-    vacancy_rank = models.CharField(max_length=20)
-    label = models.TextField()
-    still_open = models.SmallIntegerField()
-    verified = models.SmallIntegerField()
-    provider = models.CharField(max_length=20)
-    provider_email = models.CharField(max_length=255)
-    country = models.IntegerField()
-    job_title = models.CharField(max_length=55)
-    queryString = models.CharField(max_length=55)
-    detail = models.TextField()
-    '''
-
     class Meta:
         managed = False
         db_table = 'GISource'
-
-
-
-'''
-class Countries(models.Model):
-    Country_ID = models.AutoField(primary_key = True)
-    Country_Name_CN = models.CharField(max_length=20)
-    Country_Name_EN = models.CharField(max_length=20)
-    Continent_FK = models.CharField(max_length=20)
-    Continent = models.CharField(max_length=20)
-    class Meta:
-        managed = False
-        db_table = 'Countries'
-'''
 
 
 class NewUniversity(models.Model):
@@ -91,36 +49,3 @@ class NewUniversity(models.Model):
     Unit_EN = models.CharField(max_length=255)
     Lon = models.FloatField()
     Lat = models.FloatField()
-
-    class Meta:
-        managed = False
-        db_table = 'new_Universities'
-
-    def __str__(self):
-        return self.University_Name_EN
-
-
-class Cities(models.Model):
-    City_id = models.AutoField(primary_key=True)
-    City_Name_CN = models.CharField(max_length=255)
-    City_Name_EN = models.CharField(max_length=255)
-    Country = models.CharField(max_length=255)
-    Lat = models.CharField(max_length=255)
-    Lon = models.CharField(max_length=255)
-    City_Name_Other = models.CharField(max_length=255)
-    f7 = models.CharField(max_length=255)
-
-    class Meta:
-        managed = False
-        db_table = 'new_city'
-
-class Countries (models.Model):
-    Country_id = models.AutoField(primary_key=True)
-    f4 = models.CharField(max_length=255)
-    Continent = models.CharField(max_length=255)
-    Country_Name_CN = models.CharField(max_length=255)
-    Country_Name_EN = models.CharField(max_length=255)
-
-    class Meta:
-        managed = False
-        db_table = 'new_country'
