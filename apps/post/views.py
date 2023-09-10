@@ -150,33 +150,30 @@ def get_posts_by_major(request):
 
             e.g.
             http://127.0.0.1:8000/api/post_major?label=GIS
-
-            """
+    请确保在请求中提供正确的 label 参数以避免错误。
+    例如，使用 ?label=gis 来获取名为 label_gis 的记录。
+    """
     if request.method == "GET":
-        if len(request.GET['label']):
-            major = request.GET['label']
-            pageSize = 10
-            pageIndex = 1
+        label = request.GET.get('label', '')  # 获取标签参数
+        pageSize = request.GET.get('pageSize', 10)
+        pageIndex = request.GET.get('pageIndex', 1)
 
-            if 'pageSize' in request.GET:
-                pageSize = request.GET['pageSize']
-            if 'pageIndex' in request.GET:
-                pageIndex = request.GET['pageIndex']
+        if not label:
+            return JsonResponse({"code": 1, "msg": "Please provide a 'label' parameter."})
+        '''
+        将 label 参数用于构建数据库查询条件，使用 label_{label.lower()} 来动态选择适当的数据库字段。
+        其中 {label.lower()} 用于将输入的标签参数转换为小写，以匹配数据库字段的命名约定。
+        '''
+        # 使用 filter 方法来筛选标签匹配的帖子
+        record = GISource.objects.filter(**{f'label_{label.lower()}': 1})
 
-            record = GISource.objects.filter(
-                label__contains=major
-            )
-            paginator = Paginator(record, pageSize)
-            page_content = paginator.page(pageIndex)
-            serializer = GISourceSerializer(page_content, many=True)
-            print(serializer.data)
+        paginator = Paginator(record, pageSize)
+        page_content = paginator.page(pageIndex)
+        serializer = GISourceSerializer(page_content, many=True)
 
-            return Response(serializer.data)
-        else:
-            return JsonResponse({"status": "1", "msg": "Please check the params"})
+        return Response({"code": 0, "data": serializer.data, "count": paginator.count})
     else:
         return JsonResponse({"status": "0", "msg": "Please check the request method"})
-
 
 @api_view(['GET'])
 @permission_classes((AllowAny,))
