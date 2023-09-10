@@ -69,8 +69,8 @@ def get_school_list(request):
             'P_GIS': row[33],
             'P_RS': row[34],
             'P_GNSS': row[35],
-            'P_Research_Interests': row[35],
-            'P_people_id': row[36]
+            'P_Research_Interests': row[36],
+            'P_people_id': row[37]
         })
 
     return Response(data)
