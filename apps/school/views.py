@@ -38,7 +38,7 @@ def get_school_list(request):
             u.Universities_id, c.City_Name_CN, c.City_Name_EN, c.Country, c.Lat, c.Lon,
             c.City_Name_Other, c.City_id, c.Country_EN, co.Country_Name_CN, co.Country_Name_EN, 
             co.Continent, co.Country_id, co.Continent_EN, p.Person_Name_CN, p.Person_Name_EN, p.URL, 
-            p.Physical_Geography, p.Human_Geography, p.Urban_Planning, p.GIS, p.RS, p.GNSS, p.Research_Interests, p.people_id
+            p.Physical_Geography, p.Human_Geography, p.Urban_Planning, p.GIS, p.RS, p.GNSS, p.Transportation, p.Research_Interests, p.people_id
             FROM new_Universities u 
             LEFT JOIN new_city c ON u.City = c.City_Name_EN
             LEFT JOIN new_country co ON c.Country = co.Country_Name_CN
@@ -83,8 +83,9 @@ def get_school_list(request):
             'P_GIS': row[33],
             'P_RS': row[34],
             'P_GNSS': row[35],
-            'P_Research_Interests': row[36],
-            'P_people_id': row[37]
+            'P_Transportation': row[36],
+            'P_Research_Interests': row[37],
+            'P_people_id': row[38]
         })
 
     return Response(data)
