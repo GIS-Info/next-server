@@ -274,13 +274,9 @@ def manage_post(request, post_id):
     elif request.method == 'POST':
         body = json.loads(request.body)
         record_serializer = GISourceSerializer(record, data=body)
-        logger.error('1')
         if record_serializer.is_valid():
-            logger.error('2')
             record_serializer.save()
-            logger.error('3')
             return JsonResponse({"code": 0, "msg": "success"})
-        logger.error('4')
         logger.error(record_serializer.errors)
         return JsonResponse({"code": 500, "msg": 'record_serializer not pass'})
     elif request.method == 'DELETE':

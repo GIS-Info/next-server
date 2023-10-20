@@ -16,6 +16,20 @@ from django.db import connection
 @permission_classes((AllowAny,))
 @authentication_classes((TokenAuthentication,))
 def get_school_list(request):
+    """
+    e.g.
+    http://127.0.0.1:8000/api/schools
+    http://127.0.0.1:8000/api/schools?tag=Urban_Planning
+    http://127.0.0.1:8000/api/schools?tag=Urban_Planning,Transportation
+    """
+    whereSql = ''
+    # 如果请求中带了 tag 参数，则用 tag 参数去构造 WHERE 条件
+    if 'tag' in request.GET:
+        tags = request.GET['tag'].split(',')
+        whereArr = []
+        for tag in tags:
+            whereArr.append('(u.' + tag + '=1 AND p.' + tag + '=1)')
+        whereSql = 'WHERE' + ' OR '.join(whereArr)
     with connection.cursor() as cursor:
         cursor.execute("""
             SELECT u.University_Name_CN, u.University_Name_EN, u.University_Name_Local, 
@@ -29,7 +43,7 @@ def get_school_list(request):
             LEFT JOIN new_city c ON u.City = c.City_Name_EN
             LEFT JOIN new_country co ON c.Country = co.Country_Name_CN
             LEFT JOIN new_people p ON u.University_Name_EN = p.University
-        """)
+        """ + whereSql)
         rows = cursor.fetchall()
 
     data = []
