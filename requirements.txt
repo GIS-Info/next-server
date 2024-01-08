@@ -12,4 +12,3 @@ django-rest-knox==4.2.0
 drf_yasg==1.21.4
 django-mailinglist==0.1.5
 sorl-thumbnail==12.10.0
-
