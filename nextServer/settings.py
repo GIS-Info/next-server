@@ -169,7 +169,7 @@ EMAIL_HOST = 'smtp-mail.outlook.com'  # or your Outlook SMTP server address
 EMAIL_PORT = 587  # Outlook SMTP port
 EMAIL_USE_TLS = True  # Use TLS encryption
 EMAIL_HOST_USER = 'no-reply@gisphere.info'  # Your Outlook email address
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')   # Your Outlook email password or app password
+# EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')   
 DEFAULT_FROM_EMAIL = 'no-reply@gisphere.info'
 
 MAILINGLIST_BASE_URL = "https://www.gisphere.info"  # NO TRAILING SLASH PLEASE
