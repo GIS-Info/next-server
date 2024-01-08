@@ -53,6 +53,9 @@ INSTALLED_APPS = [
     'apps.post',
     'accounts',
     'knox',
+    'django.contrib.sites',
+    'sorl.thumbnail',
+    'mailinglist',
 ]
 if DEBUG:
     INSTALLED_APPS += ['drf_yasg']
@@ -68,6 +71,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'nextServer.urls'
+
+SITE_ID = 1# Adjust this ID based on your site's ID in the database
 
 TEMPLATES = [
     {
@@ -86,6 +91,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'nextServer.wsgi.application'
+
+NEWSLETTER_THUMBNAIL = 'sorl-thumbnail'
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
@@ -155,6 +162,19 @@ REST_FRAMEWORK = {
         'knox.auth.TokenAuthentication',
     ],
 }
+
+# email SMTP setting
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp-mail.outlook.com'  # or your Outlook SMTP server address
+EMAIL_PORT = 587  # Outlook SMTP port
+EMAIL_USE_TLS = True  # Use TLS encryption
+EMAIL_HOST_USER = 'no-reply@gisphere.info'  # Your Outlook email address
+# EMAIL_HOST_PASSWORD =   # Your Outlook email password or app password
+DEFAULT_FROM_EMAIL = 'no-reply@gisphere.info'
+
+MAILINGLIST_BASE_URL = "https://www.gisphere.info"  # NO TRAILING SLASH PLEASE
+MAILINGLIST_DEFAULT_SENDER_EMAIL = "no-reply@gisphere.info"
+
 
 # LOGGING_DIR = BASE_DIR.joinpath("logs")
 # debug_log_dir = LOGGING_DIR / "debug"
