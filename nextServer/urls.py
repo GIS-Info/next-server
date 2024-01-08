@@ -35,7 +35,6 @@ urlpatterns = [
     path('api/', include("apps.post.urls")),
     path('api/', include("apps.school.urls")),
     path('', include('accounts.urls')),
-    path("mailinglist/", include("mailinglist.urls", namespace="mailinglist")),
 ]
 if settings.DEBUG:
     urlpatterns += [path('', include('app.apis.swagger.urls')),
