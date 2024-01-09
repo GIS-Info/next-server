@@ -7,7 +7,7 @@ djangorestframework==3.13.1
 pycparser==2.21
 PyMySQL==1.0.2
 pytz==2022.1
-sqlparse==0.4.2
+sqlparse==0.4.4
 django-rest-knox==4.2.0
 drf_yasg==1.21.4
 django-mailinglist==0.1.5
