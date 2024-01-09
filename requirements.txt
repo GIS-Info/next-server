@@ -1,7 +1,7 @@
 asgiref==3.5.1
 cffi==1.15.0
 cryptography==37.0.2
-Django==4.0.4
+Django==4.1.13
 django-environ==0.8.1
 djangorestframework==3.13.1
 pycparser==2.21
