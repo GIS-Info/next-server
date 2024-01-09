@@ -1,4 +1,4 @@
-asgiref==3.4.1
+asgiref==3.2.3
 cffi==1.15.0
 cryptography==37.0.2
 Django==4.0.4
