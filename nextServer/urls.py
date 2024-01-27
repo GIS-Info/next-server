@@ -21,7 +21,6 @@ from rest_framework.routers import DefaultRouter
 
 from app.views import UserListView
 from django.conf import settings
-
 from . import views
 
 router = DefaultRouter()
@@ -34,8 +33,9 @@ urlpatterns = [
     path('', include(router.urls)),
     path('api/', include("apps.post.urls")),
     path('api/', include("apps.school.urls")),
+    path('api/', include("apps.subscriptions.urls")),
     path('', include('accounts.urls')),
-    path("mailinglist/", include("mailinglist.urls", namespace="mailinglist")),
+    path('mailinglist/', include('mailinglist.urls', namespace='mailinglist')),
 ]
 if settings.DEBUG:
     urlpatterns += [path('', include('app.apis.swagger.urls')),
