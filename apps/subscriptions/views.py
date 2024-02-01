@@ -56,3 +56,30 @@ def subscribe_user(request):
 
     else:
         return JsonResponse({"code": 1, "message": "Invalid request method."})
+
+
+def confirm_subscription(request, token):
+    """
+    Confirm a user's subscription and render a confirmation page.
+
+    URL Example:
+    GET http://127.0.0.1:8000/mailinglist/subscribe/<token>/confirm/
+    """
+    try:
+        service = SubscriptionService()
+        subscription = service.confirm_subscription(token=token)
+
+        if subscription:
+            # 记录成功的确认
+            logger.info(f"Subscription for token {token} confirmed.")
+            context = {'is_subscription': True, 'is_global_unsubscription': False}
+        else:
+            # Token 无效或未找到对应订阅
+            logger.warning(f"Invalid or non-existent token: {token}")
+            context = {'is_subscription': False}
+    except Exception as e:
+        # 记录异常
+        logger.error(f"Subscription confirmation failed: {str(e)}")
+        context = {'is_subscription': False}
+
+    return render(request, 'mailinglist/web/subscribe_confirm.html', context)
