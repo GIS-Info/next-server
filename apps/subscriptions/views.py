@@ -37,14 +37,12 @@ def subscribe_user(request):
         first_name = request.data.get("first_name")
         last_name = request.data.get("last_name")
         mailing_list_slug = request.data.get("mailing_list_slug")
-        print(email, first_name, last_name)
 
         try:
             service = SubscriptionService()
             mailing_list = MailingList.objects.get(slug=mailing_list_slug)
             user = service.create_user(email=email, first_name=first_name, last_name=last_name)
             service.subscribe(user=user, mailing_list=mailing_list)
-
             # 记录成功的订阅
             logger.info(f"User {email} subscribed to {mailing_list_slug}")
 
@@ -63,7 +61,7 @@ def confirm_subscription(request, token):
     Confirm a user's subscription and render a confirmation page.
 
     URL Example:
-    GET http://127.0.0.1:8000/mailinglist/subscribe/<token>/confirm/
+    GET http://127.0.0.1:8000/api/subscribe/<token>/confirm
     """
     try:
         service = SubscriptionService()
@@ -71,15 +69,13 @@ def confirm_subscription(request, token):
 
         if subscription:
             # 记录成功的确认
-            logger.info(f"Subscription for token {token} confirmed.")
             context = {'is_subscription': True, 'is_global_unsubscription': False}
         else:
             # Token 无效或未找到对应订阅
-            logger.warning(f"Invalid or non-existent token: {token}")
             context = {'is_subscription': False}
     except Exception as e:
         # 记录异常
         logger.error(f"Subscription confirmation failed: {str(e)}")
         context = {'is_subscription': False}
 
-    return render(request, 'mailinglist/web/subscribe_confirm.html', context)
+    return render(request, 'mailinglist/web/confirm.html', context)
