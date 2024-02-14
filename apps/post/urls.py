@@ -16,9 +16,8 @@ urlpatterns = [
     path('uniInfo/get_continent_data/<str:continent>', views.get_continent_data, name='get_continent_data'),
     path('uniInfo/get_country_data/<str:country>', views.get_country_data, name='get_country_data'),
 
-
-    # 这里querystring接口没有尾部url原因是改为了post请求以解决中文url乱码问题
-
+    # 帖子搜索的接口
+    path('post_by_params', user_views.get_posts_by_params, name = 'get_posts_by_params'),
     # 这里querystring接口没有尾部url原因是改为了post请求以解决中文url乱码问题
     path('post_querystring', user_views.get_posts_by_querystring, name = 'get_posts_by_querystring'),
     path('post_closedate/', user_views.get_posts_by_enddate, name = 'get_posts_by_enddate'),
