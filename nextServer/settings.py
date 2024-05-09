@@ -53,7 +53,6 @@ INSTALLED_APPS = [
     'apps.post',
     'accounts',
     'knox',
-    'nextServer',
     'django.contrib.sites',
     'sorl.thumbnail',
     'mailinglist',
@@ -108,8 +107,7 @@ DATABASES = {
         'USER': env('DB_USER'),
         'PASSWORD': env('DB_PASSWORD'),
         'OPTIONS': {
-            "init_command": "SET foreign_key_checks = 0;",
-            'autocommit': True,
+            "init_command": "SET foreign_key_checks = 0;"
         }
     }
 }
