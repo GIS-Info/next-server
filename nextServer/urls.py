@@ -22,8 +22,6 @@ from rest_framework.routers import DefaultRouter
 from app.views import UserListView
 from django.conf import settings
 from . import views
-from .views import file_upload
-
 
 router = DefaultRouter()
 router.register('api/manage/user', UserListView)
@@ -37,8 +35,7 @@ urlpatterns = [
     path('api/', include("apps.school.urls")),
     path('api/', include("apps.subscriptions.urls")),
     path('', include('accounts.urls')),
-    path("mailinglist/", include("mailinglist.urls", namespace="mailinglist")),
-    path('upload/', file_upload, name='file_upload'),
+    path('mailinglist/', include('mailinglist.urls', namespace='mailinglist')),
 ]
 if settings.DEBUG:
     urlpatterns += [path('', include('app.apis.swagger.urls')),
