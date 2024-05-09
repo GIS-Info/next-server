@@ -33,6 +33,11 @@ def map_csv_to_model(data):
         # Add more fields as necessary
     }
 
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, True)
+)
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 environ.Env.read_env(BASE_DIR.joinpath('.env'))
