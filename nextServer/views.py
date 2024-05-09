@@ -32,6 +32,11 @@ def map_csv_to_model(data):
         'transportation': bool(int(data.get('Transportation', 0))),
         # Add more fields as necessary
     }
+    
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, True)
+)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
