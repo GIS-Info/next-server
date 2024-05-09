@@ -24,6 +24,63 @@ from django.db import connection
 from django.db.models import Q
 
 # Create your views here.
+@api_view(['POST'])
+@permission_classes((AllowAny,))
+@authentication_classes((TokenAuthentication,))
+def get_posts_by_params(request):
+    """
+    Get posts based on various parameters. 统一搜索接口,优化用户体验.
+
+    Examples:
+    - http://127.0.0.1:8000/api/postList?queryString=example&pageSize=10&pageIndex=1
+    - http://127.0.0.1:8000/api/postList?label=GIS&pageSize=10&pageIndex=1
+    - http://127.0.0.1:8000/api/postList?year=2022&month=5&pageSize=10&pageIndex=1
+    - http://127.0.0.1:8000/api/postList?pageSize=10&pageIndex=1&is_public=1&is_deleted=0
+    """
+    if request.method == 'POST':
+        # 构造params用于筛选
+        params = {
+            'is_public': 1,
+            'is_deleted': 0,
+        }
+        print(request)
+        queryString = request.data.get('queryString', '')
+        label = request.data.get('label', '')
+        year = request.data.get('year', '')
+        month = request.data.get('month', '')
+        pageSize = request.data.get('pageSize', 7)
+        pageIndex = request.data.get('pageIndex', 1)
+        
+        if queryString:
+            params.update({
+                'query_condition': (
+                    Q(title_cn__icontains=queryString) |
+                    Q(title_en__icontains=queryString) |
+                    Q(description__icontains=queryString)
+                )
+            })
+
+        if label:
+            params.update({f'label_{label.lower()}': 1})
+
+        if year and month:
+            params.update({
+                'date__year': year,
+                'date__month': month,
+            })
+
+        query_condition = params.pop('query_condition', Q())  # 获取并移除 query_condition
+        records = GISource.objects.filter(query_condition, **params).order_by('-event_id')
+
+        paginator = Paginator(records, pageSize)
+        page_content = paginator.page(pageIndex)
+        count = paginator.count
+        serializer = GISourceSerializer(page_content, many=True)
+        
+        return Response({"code": 0, "data": serializer.data, "count": count})
+    else:
+        return JsonResponse({"code": 1, "msg": "Invalid request method."})
+
 @api_view(['GET'])
 @permission_classes((AllowAny,))
 @authentication_classes((TokenAuthentication,))
