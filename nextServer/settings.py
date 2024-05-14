@@ -178,6 +178,8 @@ DEFAULT_FROM_EMAIL = 'no-reply@gisphere.info'
 MAILINGLIST_BASE_URL = "https://www.gisphere.info"  # NO TRAILING SLASH PLEASE
 MAILINGLIST_DEFAULT_SENDER_EMAIL = "no-reply@gisphere.info"
 
+CSRF_TRUSTED_ORIGINS = ['https://gisphere.info', 'https://www.gisphere.info']    # allowed CSRF token from gisphere.info 
+
 
 # LOGGING_DIR = BASE_DIR.joinpath("logs")
 # debug_log_dir = LOGGING_DIR / "debug"
