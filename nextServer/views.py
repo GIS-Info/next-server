@@ -33,6 +33,7 @@ def map_csv_to_person(data):
         # Add more fields as necessary
     }
 
+
 def map_csv_to_university(data):
     return {
         'university_name_cn': data.get('University_Name_CN'),
