@@ -61,22 +61,38 @@
             <table>
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Person Name (CN)</th>
-                        <th>Person Name (EN)</th>
-                        <th>URL</th>
-                        <!-- Add more columns as needed -->
+                        {% if data_type == "person" %}
+                            <th>ID</th>
+                            <th>Person Name (CN)</th>
+                            <th>Person Name (EN)</th>
+                            <th>URL</th>
+                            <!-- Add more person-specific columns as needed -->
+                        {% else %}
+                            <th>ID</th>
+                            <th>University Name (EN)</th>
+                            <th>City</th>
+                            <th>URL</th>
+                            <!-- Add more university-specific columns as needed -->
+                        {% endif %}
                     </tr>
                 </thead>
                 <tbody>
                     {% for item in modifications %}
-                    <tr>
-                        <td>{{ item.Id }}</td>
-                        <td>{{ item.Person_Name_CN }}</td>
-                        <td>{{ item.Person_Name_EN }}</td>
-                        <td>{{ item.URL }}</td>
-                        <!-- Add more fields as needed -->
-                    </tr>
+                        <tr>
+                            {% if data_type == "person" %}
+                                <td>{{ item.Id }}</td>
+                                <td>{{ item.Person_Name_CN }}</td>
+                                <td>{{ item.Person_Name_EN }}</td>
+                                <td>{{ item.URL }}</td>
+                                <!-- Add more fields as needed -->
+                            {% else %}
+                                <td>{{ item.Id }}</td>
+                                <td>{{ item.University_Name_EN }}</td>
+                                <td>{{ item.City }}</td>
+                                <td>{{ item.URL }}</td>
+                                <!-- Add more fields as needed -->
+                            {% endif %}
+                        </tr>
                     {% endfor %}
                 </tbody>
             </table>
@@ -89,8 +105,15 @@
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
 
-            <label for="file">Select file to upload(please use UTF-8 encoded CSV):</label>
+            <label for="file">Select file to upload (please use UTF-8 encoded CSV):</label>
             <input type="file" id="file" name="file" required>
+
+            <!-- Select Data Type -->
+            <label for="data_type">Data Type:</label>
+            <select id="data_type" name="data_type">
+                <option value="person">Person</option>
+                <option value="university">University</option>
+            </select>
 
             <button type="submit">Upload</button>
         </form>
