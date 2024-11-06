@@ -21,15 +21,29 @@ def get_school_list(request):
     http://127.0.0.1:8000/api/schools
     http://127.0.0.1:8000/api/schools?tag=Urban_Planning
     http://127.0.0.1:8000/api/schools?tag=Urban_Planning,Transportation
+    http://127.0.0.1:8000/api/schools?continent=Asia
     """
-    whereSql = ''
-    # 如果请求中带了 tag 参数，则用 tag 参数去构造 WHERE 条件
+    whereClauses = []
+    
+    # 如果请求中带了 tag 参数，构造标签过滤条件
     if 'tag' in request.GET:
         tags = request.GET['tag'].split(',')
-        whereArr = []
+        tagConditions = []
         for tag in tags:
-            whereArr.append('(u.' + tag + '=1 AND p.' + tag + '=1)')
-        whereSql = 'WHERE' + ' OR '.join(whereArr)
+            tagConditions.append('(u.' + tag + '=1 AND p.' + tag + '=1)')
+        whereClauses.append('(' + ' OR '.join(tagConditions) + ')')
+    
+    # 如果请求中带了 continent 参数，构造地区过滤条件
+    if 'continent' in request.GET:
+        continent = request.GET['continent']
+        print(continent)
+        whereClauses.append("co.Continent_EN = '" + continent + "'")
+    
+    # 构造最终的 WHERE 子句
+    whereSql = ''
+    if whereClauses:
+        whereSql = 'WHERE ' + ' AND '.join(whereClauses)
+
     with connection.cursor() as cursor:
         cursor.execute("""
             SELECT u.University_Name_CN, u.University_Name_EN, u.University_Name_Local, 
