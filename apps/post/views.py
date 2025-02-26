@@ -605,3 +605,72 @@ def get_country_data(request, country):
         })
 
     return Response(data)
+
+@api_view(['POST'])
+@permission_classes((AllowAny,))
+def send_proposal_email(request):
+    """
+    Handle user proposal submission and send email.
+    
+    Request body:
+    {
+        "category": "school",  # Category of the proposal
+        "content": "Detailed proposal content..."
+    }
+    """
+    try:
+        category = request.data.get('category')
+        content = request.data.get('content')
+        
+        if not category or not content:
+            return Response({
+                'status': 'error',
+                'message': 'Category and content are required'
+            }, status=400)
+        
+        # 获取类别的中文描述
+        category_map = {
+            'school': '学校更新',
+            'professor': '教授信息更新',
+            'recruitment': '招生信息更新',
+            'competition': '论文竞赛/会议信息'
+        }
+        category_text = category_map.get(category, category)
+        
+        # 构建邮件内容
+        subject = f'新的用户反馈 - {category_text}'
+        message = f'''收到新的用户反馈
+
+类别: {category_text}
+
+内容:
+{content}
+
+---
+此邮件由系统自动发送，请勿直接回复。'''
+        
+        # 发送邮件
+        from django.core.mail import send_mail
+        from django.conf import settings
+        
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+
+            # 接收邮件的地址
+            recipient_list=['gisphere@outlook.com'],
+            fail_silently=False,
+        )
+        
+        return Response({
+            'status': 'success',
+            'message': '您的反馈已成功发送'
+        })
+        
+    except Exception as e:
+        logger.error(f'Error sending proposal email: {str(e)}')
+        return Response({
+            'status': 'error',
+            'message': '发送失败，请稍后重试'
+        }, status=500)

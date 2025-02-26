@@ -22,6 +22,9 @@ urlpatterns = [
     path('post_querystring', user_views.get_posts_by_querystring, name = 'get_posts_by_querystring'),
     path('post_closedate/', user_views.get_posts_by_enddate, name = 'get_posts_by_enddate'),
 
+    # 用户反馈邮件发送接口
+    path('send-proposal/', user_views.send_proposal_email, name='send-proposal-email'),
+
     # 对管理员开发的接口
     path('manage/post', user_views.manage_get_post_list, name = 'manage_get_post_list'), # GET: 管理员获取帖子列表
     path('manage/post/<int:post_id>', user_views.manage_post, name = 'manage_post'), # GET: 管理员获取帖子内容 POST: 管理员更新帖子内容 DELETE: 管理员删除帖子
