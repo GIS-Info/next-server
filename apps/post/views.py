@@ -611,24 +611,24 @@ def get_country_data(request, country):
 def send_proposal_email(request):
     """
     Handle user proposal submission and send email.
-    
+
     Request body:
     {
-        "category": "school",  # Category of the proposal
-        "content": "Detailed proposal content..."
+        "category": "school",
+        "content": "Detailed proposal content...",
+        "email": "user@example.com"
     }
     """
     try:
         category = request.data.get('category')
         content = request.data.get('content')
-        
-        if not category or not content:
+        email = request.data.get('email')
+
+        if not category or not content or not email:
             return Response({
                 'status': 'error',
-                'message': 'Category and content are required'
+                'message': 'Category, content and email are required'
             }, status=400)
-        
-        # 获取类别的中文描述
         category_map = {
             'school': '学校更新',
             'professor': '教授信息更新',
@@ -642,6 +642,7 @@ def send_proposal_email(request):
         message = f'''收到新的用户反馈
 
 类别: {category_text}
+邮箱: {email}
 
 内容:
 {content}
@@ -652,22 +653,20 @@ def send_proposal_email(request):
         # 发送邮件
         from django.core.mail import send_mail
         from django.conf import settings
-        
+
         send_mail(
             subject=subject,
             message=message,
             from_email=settings.DEFAULT_FROM_EMAIL,
-
-            # 接收邮件的地址
             recipient_list=['gisphere@outlook.com'],
             fail_silently=False,
         )
-        
+
         return Response({
             'status': 'success',
             'message': '您的反馈已成功发送'
         })
-        
+
     except Exception as e:
         logger.error(f'Error sending proposal email: {str(e)}')
         return Response({
