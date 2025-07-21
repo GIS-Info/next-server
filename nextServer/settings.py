@@ -110,7 +110,15 @@ DATABASES = {
         'OPTIONS': {
             "init_command": "SET foreign_key_checks = 0;",
             'autocommit': True,
-        }
+            # 优化：添加连接池配置，减少连接创建开销
+            'charset': 'utf8mb4',
+            'connect_timeout': 10,
+            'read_timeout': 30,
+            'write_timeout': 30,
+        },
+        # 优化：配置连接池参数
+        'CONN_MAX_AGE': 60,  # 连接最大存活时间（秒）
+        'CONN_HEALTH_CHECKS': True,  # 启用连接健康检查
     }
 }
 
