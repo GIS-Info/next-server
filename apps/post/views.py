@@ -608,27 +608,22 @@ def get_country_data(request, country):
 
 @api_view(['POST'])
 @permission_classes((AllowAny,))
+from django.core.mail import EmailMessage  # 必须引入这个类
+from django.conf import settings
+
 def send_proposal_email(request):
-    """
-    Handle user proposal submission and send email.
-    
-    Request body:
-    {
-        "category": "school",  # Category of the proposal
-        "content": "Detailed proposal content..."
-    }
-    """
     try:
+        # 1. 获取文字字段
         category = request.data.get('category')
         content = request.data.get('content')
+        user_email = request.data.get('email')  # 对应你在前端新增的 email 字段
         
+        # 2. 获取上传的文件对象 (这里的 'file' 必须和前端 formData 的 key 一致)
+        uploaded_file = request.FILES.get('file')
+
         if not category or not content:
-            return Response({
-                'status': 'error',
-                'message': 'Category and content are required'
-            }, status=400)
-        
-        # 获取类别的中文描述
+            return Response({'status': 'error', 'message': 'Category and content are required'}, status=400)
+
         category_map = {
             'school': '学校更新',
             'professor': '教授信息更新',
@@ -636,41 +631,41 @@ def send_proposal_email(request):
             'competition': '论文竞赛/会议信息'
         }
         category_text = category_map.get(category, category)
-        
-        # 构建邮件内容
+
+        # 3. 准备邮件元数据
         subject = f'新的用户反馈 - {category_text}'
-        message = f'''收到新的用户反馈
+        body = f"收到新的用户反馈\n\n类别: {category_text}\n\n内容:\n{content}\n\n用户邮箱: {user_email}\n\n---\n系统自动发送"
 
-类别: {category_text}
-
-内容:
-{content}
-
----
-此邮件由系统自动发送，请勿直接回复。'''
-        
-        # 发送邮件
-        from django.core.mail import send_mail
-        from django.conf import settings
-        
-        send_mail(
+        # 4. 创建 EmailMessage 实例
+        # 注意：这里参数名是 to，接收的是列表
+        email = EmailMessage(
             subject=subject,
-            message=message,
+            body=body,
             from_email=settings.DEFAULT_FROM_EMAIL,
-
-            # 接收邮件的地址
-            recipient_list=['gisphere@outlook.com'],
-            fail_silently=False,
+            to=['gisphere@outlook.com'],
         )
-        
+
+        # 5. 关键步骤：如果用户上传了文件，将其挂载为附件
+        if uploaded_file:
+            # attach 接收三个参数: 文件名, 文件二进制内容, MIME类型
+            email.attach(
+                uploaded_file.name, 
+                uploaded_file.read(), 
+                uploaded_file.content_type
+            )
+
+        # 6. 发送邮件
+        email.send(fail_silently=False)
+
         return Response({
             'status': 'success',
             'message': '您的反馈已成功发送'
         })
-        
+
     except Exception as e:
+        # logger 这里需要确保你在文件开头已经定义过了
         logger.error(f'Error sending proposal email: {str(e)}')
         return Response({
             'status': 'error',
-            'message': '发送失败，请稍后重试'
+            'message': f'发送失败: {str(e)}'
         }, status=500)
