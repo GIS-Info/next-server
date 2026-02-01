@@ -606,10 +606,10 @@ def get_country_data(request, country):
 
     return Response(data)
 
+from django.core.mail import EmailMessage
+from django.conf import settings
 @api_view(['POST'])
 @permission_classes((AllowAny,))
-from django.core.mail import EmailMessage  # 必须引入这个类
-from django.conf import settings
 
 def send_proposal_email(request):
     try:
