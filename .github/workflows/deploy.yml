@@ -1,0 +1,39 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ "main" ]
+  schedule:
+    - cron: "0 0 * * *" # Daily 00:00 UTC
+
+concurrency:
+  group: deploy-next-server
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Deploy on server
+        shell: bash
+        run: |
+          set -e
+          BUILD_ID=dontKillMe
+          set -x
+
+          cd /home/lighthouse/proj/next-server
+
+          sudo git pull
+
+          # Activate venv
+          source env/bin/activate
+
+          # Update dependencies
+          pip install -r requirements.txt
+
+          # Stop previous service
+          sudo pkill -f runserver
+
+          nohup python manage.py runserver &
+
+          sleep 5
