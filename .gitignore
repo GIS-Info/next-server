@@ -1,4 +1,5 @@
 .idea
+.env
 .env.*
 # 开发用包管理工具
 poetry.lock
@@ -254,4 +255,3 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
-
