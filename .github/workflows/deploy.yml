@@ -37,7 +37,8 @@ jobs:
 
           cd /home/lighthouse/proj/next-server
 
-          git pull
+          git fetch origin main
+          git reset --hard origin/main
 
           # Activate venv
           source env/bin/activate
