@@ -16,12 +16,11 @@ Including another URLconf
 Router system: url --- view
 """
 from django.contrib import admin
-from django.urls import include, path, re_path
+from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from app.views import UserListView
 from django.conf import settings
-from . import views
 from .views import file_upload
 
 
@@ -30,8 +29,6 @@ router.register('api/manage/user', UserListView)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    re_path(r'^$', views.hello),
-    path('hello/', views.hello_world),
     path('', include(router.urls)),
     path('api/', include("apps.post.urls")),
     path('api/', include("apps.school.urls")),
