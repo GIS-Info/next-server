@@ -37,7 +37,7 @@ jobs:
 
           cd /home/lighthouse/proj/next-server
 
-          sudo git pull
+          git pull
 
           # Activate venv
           source env/bin/activate
@@ -45,10 +45,10 @@ jobs:
           # Update dependencies
           pip install -r requirements.txt
 
-          # Stop previous service
-          sudo pkill -f runserver
+          # Stop previous service (if any), then start one single process.
+          pkill -f "manage.py runserver" || true
 
-          nohup python manage.py runserver &
+          nohup env/bin/python manage.py runserver --noreload > /tmp/next-server.log 2>&1 &
 
           sleep 5
           EOF
