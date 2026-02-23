@@ -14,9 +14,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
       - name: Setup SSH
         shell: bash
         run: |
@@ -32,24 +29,17 @@ jobs:
           set -e
           ssh -i ~/.ssh/id_rsa lighthouse@43.154.149.214 << 'EOF'
           set -e
-          BUILD_ID=dontKillMe
-          set -x
 
           cd /home/lighthouse/proj/next-server
 
           git fetch origin main
           git reset --hard origin/main
 
-          # Activate venv
-          source env/bin/activate
-
           # Update dependencies
-          pip install -r requirements.txt
+          env/bin/pip install -r requirements.txt
 
           # Stop previous service (if any), then start one single process.
           pkill -f "manage.py runserver" || true
 
           nohup env/bin/python manage.py runserver --noreload > /tmp/next-server.log 2>&1 &
-
-          sleep 5
           EOF
