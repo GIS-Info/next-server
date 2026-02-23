@@ -20,7 +20,6 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from app.views import UserListView
-from django.conf import settings
 from .views import file_upload
 
 
@@ -37,6 +36,3 @@ urlpatterns = [
     path("mailinglist/", include("mailinglist.urls", namespace="mailinglist")),
     path('upload/', file_upload, name='file_upload'),
 ]
-if settings.DEBUG:
-    urlpatterns += [path('', include('app.apis.swagger.urls')),
-                    ]
