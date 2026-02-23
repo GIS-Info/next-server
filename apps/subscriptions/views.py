@@ -1,11 +1,10 @@
 from django.shortcuts import render
 
 # Create your views here.
-import json
 import logging
 
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from knox.auth import TokenAuthentication
 from django.http import JsonResponse
@@ -32,28 +31,21 @@ def subscribe_user(request):
         "mailing_list_slug": "example-slug"
     }
     """
-    if request.method == 'POST':
-        email = request.data.get("email")
-        first_name = request.data.get("first_name")
-        last_name = request.data.get("last_name")
-        mailing_list_slug = request.data.get("mailing_list_slug")
+    email = request.data.get("email")
+    first_name = request.data.get("first_name")
+    last_name = request.data.get("last_name")
+    mailing_list_slug = request.data.get("mailing_list_slug")
 
-        try:
-            service = SubscriptionService()
-            mailing_list = MailingList.objects.get(slug=mailing_list_slug)
-            user = service.create_user(email=email, first_name=first_name, last_name=last_name)
-            service.subscribe(user=user, mailing_list=mailing_list)
-            # 记录成功的订阅
-            logger.info(f"User {email} subscribed to {mailing_list_slug}")
-
-            return Response({"code": 0, "message": "Subscribed successfully, Please check your email"})
-        except Exception as e:
-            # 记录异常
-            logger.error(f"Subscription failed: {str(e)}")
-            return JsonResponse({"code": 1, "message": "Subscription failed"})
-
-    else:
-        return JsonResponse({"code": 1, "message": "Invalid request method."})
+    try:
+        service = SubscriptionService()
+        mailing_list = MailingList.objects.get(slug=mailing_list_slug)
+        user = service.create_user(email=email, first_name=first_name, last_name=last_name)
+        service.subscribe(user=user, mailing_list=mailing_list)
+        logger.info(f"User {email} subscribed to {mailing_list_slug}")
+        return Response({"code": 0, "message": "Subscribed successfully, Please check your email"})
+    except Exception as exc:
+        logger.error(f"Subscription failed: {str(exc)}")
+        return JsonResponse({"code": 1, "message": "Subscription failed"})
 
 
 def confirm_subscription(request, token):
@@ -73,9 +65,9 @@ def confirm_subscription(request, token):
         else:
             # Token 无效或未找到对应订阅
             context = {'is_subscription': False}
-    except Exception as e:
+    except Exception as exc:
         # 记录异常
-        logger.error(f"Subscription confirmation failed: {str(e)}")
+        logger.error(f"Subscription confirmation failed: {str(exc)}")
         context = {'is_subscription': False}
 
     return render(request, 'mailinglist/web/confirm.html', context)

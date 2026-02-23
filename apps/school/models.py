@@ -1,7 +1,5 @@
 from django.db import models
 
-from nextServer import settings
-
 
 # Create your models here.
 # 因为现有数据没有严格遵守关联关系，所以无法建立表关联，暂时通过 sql join 来关联

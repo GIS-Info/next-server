@@ -1,3 +1,1 @@
-from django.db import models
-
-# Create your models here.
+"""Account app models are defined in app.models.UserInfo."""

@@ -1,13 +1,5 @@
-import json
-import logging
-
 from knox.auth import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated, AllowAny
-
-# 生成一个以当前文件名为名字的logger实例
-logger = logging.getLogger('django')
-from django.core.paginator import Paginator
-from django.http import JsonResponse
+from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from django.db import connection
@@ -23,26 +15,25 @@ def get_school_list(request):
     http://127.0.0.1:8000/api/schools?tag=Urban_Planning,Transportation
     http://127.0.0.1:8000/api/schools?continent=Asia
     """
-    whereClauses = []
+    where_clauses = []
     
     # 如果请求中带了 tag 参数，构造标签过滤条件
     if 'tag' in request.GET:
         tags = request.GET['tag'].split(',')
-        tagConditions = []
+        tag_conditions = []
         for tag in tags:
-            tagConditions.append('(u.' + tag + '=1 AND p.' + tag + '=1)')
-        whereClauses.append('(' + ' OR '.join(tagConditions) + ')')
+            tag_conditions.append('(u.' + tag + '=1 AND p.' + tag + '=1)')
+        where_clauses.append('(' + ' OR '.join(tag_conditions) + ')')
     
     # 如果请求中带了 continent 参数，构造地区过滤条件
     if 'continent' in request.GET:
         continent = request.GET['continent']
-        print(continent)
-        whereClauses.append("co.Continent_EN = '" + continent + "'")
+        where_clauses.append("co.Continent_EN = '" + continent + "'")
     
     # 构造最终的 WHERE 子句
-    whereSql = ''
-    if whereClauses:
-        whereSql = 'WHERE ' + ' AND '.join(whereClauses)
+    where_sql = ''
+    if where_clauses:
+        where_sql = 'WHERE ' + ' AND '.join(where_clauses)
 
     with connection.cursor() as cursor:
         cursor.execute("""
@@ -57,7 +48,7 @@ def get_school_list(request):
             LEFT JOIN new_city c ON u.City = c.City_Name_EN
             LEFT JOIN new_country co ON c.Country = co.Country_Name_CN
             LEFT JOIN new_people p ON u.University_Name_EN = p.University
-        """ + whereSql)
+        """ + where_sql)
         rows = cursor.fetchall()
 
     # 优化：使用列表推导式减少内存占用

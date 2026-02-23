@@ -74,7 +74,7 @@ def get_post_list(request):
         else:
             params[key] = request.GET[key]
 
-    records = GISource.objects.filter(**params).order_by('-event_id') if params else GISource.objects.all().order_by('-event_id')
+    records = GISource.objects.filter(**params).order_by('-event_id')
     paginator = Paginator(records, page_size)
     page_content = paginator.page(page_index)
     serializer = GISourceSerializer(page_content, many=True)
@@ -99,7 +99,7 @@ def manage_get_post_list(request):
         else:
             params[key] = request.GET[key]
 
-    records = GISource.objects.filter(**params).order_by('-event_id') if params else GISource.objects.all().order_by('-event_id')
+    records = GISource.objects.filter(**params).order_by('-event_id')
     paginator = Paginator(records, page_size)
     page_content = paginator.page(page_index)
     serializer = GISourceSerializer(page_content, many=True)

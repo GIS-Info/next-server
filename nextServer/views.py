@@ -7,6 +7,9 @@ from nextServer.models import Person, University
 from django.contrib import messages
 import os
 import environ
+import logging
+
+logger = logging.getLogger('django')
 
 def hello_world(request):
     context = {}
@@ -116,24 +119,24 @@ def file_upload(request):
                 for data in modifications:
                     defaults = map_function(data)
                     if data_type == 'university':  # Check if the data type is 'university'
-                        obj, created = University.objects.update_or_create(
+                        _, created = University.objects.update_or_create(
                             university_name_en=data['University_Name_EN'],  # assuming university_name_en is the indexed field
                             defaults=defaults
                         )
                         if created:
-                            print(f"Created new {data_type}: {data['University_Name_EN']}")
+                            logger.info(f"Created new {data_type}: {data['University_Name_EN']}")
                         else:
-                            print(f"Updated existing {data_type}: {data['University_Name_EN']}")
+                            logger.info(f"Updated existing {data_type}: {data['University_Name_EN']}")
                     else:
                         # Continue with the existing logic for persons or any other data types
-                        obj, created = model.objects.update_or_create(
+                        _, created = model.objects.update_or_create(
                             defaults=defaults,
                             **{id_field: data['Id']}
                         )
                         if created:
-                            print(f"Created new {data_type}: {data['Person_Name_EN']}")
+                            logger.info(f"Created new {data_type}: {data['Person_Name_EN']}")
                         else:
-                            print(f"Updated existing {data_type}: {data['Person_Name_EN']}")
+                            logger.info(f"Updated existing {data_type}: {data['Person_Name_EN']}")
 
                 del request.session['modifications']  # Clear session data
                 del request.session['data_type']
