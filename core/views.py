@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
 from pathlib import Path
 from django.http import HttpResponse, JsonResponse
-from nextServer.forms import UploadFileForm
-from nextServer.utilities import parse_csv
-from nextServer.models import Person, University
+from core.forms import UploadFileForm
+from core.utilities import parse_csv
+from core.models import Person, University
 from django.contrib import messages
 import os
 import environ
