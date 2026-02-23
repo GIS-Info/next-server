@@ -16,8 +16,10 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 
-from .models import GISource
-from .serializer import GISourceSerializer
+from .models import GISource, NewUniversity,Cities,Countries
+from .serializer import UniversitySerializer, GISourceSerializer,CitySerializer
+from .serializer import UniCitySerializer,CountrySerializer
+from django.db import connection
 #使用Q对象来组合多个查询条件
 from django.db.models import Q
 
@@ -78,6 +80,164 @@ def get_posts_by_params(request):
         return Response({"code": 0, "data": serializer.data, "count": count})
     else:
         return JsonResponse({"code": 1, "msg": "Invalid request method."})
+
+@api_view(['GET'])
+@permission_classes((AllowAny,))
+@authentication_classes((TokenAuthentication,))
+def get_posts_by_jobtitle(request):
+    """
+    Get all the posts with selected job title
+
+    e.g.
+     http://127.0.0.1:8000/api/post_jobtitle?jobTitle=phd
+    """
+    if request.method == "GET":
+        if len(request.GET['jobTitle']):
+            jobTitle = request.GET['jobTitle']
+            pageSize = 10
+            pageIndex = 1
+
+            if 'pageSize' in request.GET:
+                pageSize = request.GET['pageSize']
+            if 'pageIndex' in request.GET:
+                pageIndex = request.GET['pageIndex']
+
+            record = GISource.objects.filter(
+                job_title=jobTitle
+            )
+            paginator = Paginator(record, pageSize)
+            page_content = paginator.page(pageIndex)
+            serializer = GISourceSerializer(page_content, many=True)
+            print(serializer.data)
+
+            return Response(serializer.data)
+        else:
+            return JsonResponse({"status": "1", "msg": "Please check the params"})
+    else:
+        return JsonResponse({"status": "0", "msg": "Please check the request method"})
+
+
+# change get request to post
+@api_view(['POST'])
+@permission_classes((AllowAny,))
+@authentication_classes((TokenAuthentication,))
+def get_posts_by_querystring(request):
+    """
+        Get all the posts with selected country or university
+
+        e.g.
+        Query by country:
+        http://127.0.0.1:8000/api/post_querystring
+
+        Query by university:
+        http://127.0.0.1:8000/api/post_querystring
+
+        """
+    if request.method == "POST":
+        queryString = request.data.get('queryString', '')
+        pageSize = request.data.get('pageSize', 10)
+        pageIndex = request.data.get('pageIndex', 1)
+
+        # 使用Q对象创建复杂查询条件
+        query_condition = (
+                Q(title_cn__icontains=queryString) |  # 中文版标题匹配
+                Q(title_en__icontains=queryString) |  # 英文版标题匹配
+                Q(description__icontains=queryString)  # description字段匹配
+        )
+
+        record = GISource.objects.filter(
+            query_condition,
+            is_public=1,
+            is_deleted=0
+        ).order_by('-date')
+
+        paginator = Paginator(record, pageSize)
+        page_content = paginator.page(pageIndex)
+        count = paginator.count
+        serializer = GISourceSerializer(page_content, many=True)
+
+        return Response({"code": 0, "data": serializer.data, "count": count})
+    else:
+        return JsonResponse({"status": "0", "msg": "Please check the request method"})
+
+@api_view(['GET'])
+@permission_classes((AllowAny,))
+@authentication_classes((TokenAuthentication,))
+def get_posts_by_major(request):
+    """
+            Get all the posts by major
+
+            e.g.
+            http://127.0.0.1:8000/api/post_major?label=GIS
+    请确保在请求中提供正确的 label 参数以避免错误。
+    例如，使用 ?label=gis 来获取名为 label_gis 的记录。
+    """
+    if request.method == "GET":
+        label = request.GET.get('label', '')  # 获取标签参数
+        pageSize = request.GET.get('pageSize', 10)
+        pageIndex = request.GET.get('pageIndex', 1)
+
+        if not label:
+            return JsonResponse({"code": 1, "msg": "Please provide a 'label' parameter."})
+        '''
+        将 label 参数用于构建数据库查询条件，使用 label_{label.lower()} 来动态选择适当的数据库字段。
+        其中 {label.lower()} 用于将输入的标签参数转换为小写，以匹配数据库字段的命名约定。
+        '''
+        # 使用 filter 方法来筛选标签匹配的帖子
+        record = GISource.objects.filter(**{f'label_{label.lower()}': 1})
+
+        paginator = Paginator(record, pageSize)
+        page_content = paginator.page(pageIndex)
+        serializer = GISourceSerializer(page_content, many=True)
+
+        return Response({"code": 0, "data": serializer.data, "count": paginator.count})
+    else:
+        return JsonResponse({"status": "0", "msg": "Please check the request method"})
+
+
+@api_view(['GET'])
+@permission_classes((AllowAny,))
+@authentication_classes((TokenAuthentication,))
+def get_posts_by_enddate(request):
+    """
+    Get post by closed date
+    e.g.
+    http://127.0.0.1:8000/api/post_closedate?year=2022&month=5
+    """
+    if request.method == "GET":
+        if len(request.GET['year']):
+            if len(request.GET['month']):
+                year = request.GET['year']
+                month = request.GET['month']  # should be 01, 02, ...10, 11, 12
+                print(year)
+                print(month)
+                # year_month = year + "-" + month
+
+                pageSize = 10
+                pageIndex = 1
+
+                if 'pageSize' in request.GET:
+                    pageSize = request.GET['pageSize']
+                if 'pageIndex' in request.GET:
+                    pageIndex = request.GET['pageIndex']
+
+                record = GISource.objects.filter(
+                    # close_date__year = year,
+                    # close_date__month = month
+                    date__year=year,
+                    date__month=month,
+                    is_public=1,
+                    is_deleted=0
+                ).order_by('-date')
+                paginator = Paginator(record, pageSize)
+                page_content = paginator.page(pageIndex)
+                count = paginator.count
+                serializer = GISourceSerializer(page_content, many=True)
+
+                return Response({"code": 0, "data": serializer.data, "count": count})
+        else:
+            return JsonResponse({"code": 1, "msg": "wrong request method"})
+
 
 @api_view(['GET'])
 @permission_classes((AllowAny,))
@@ -197,6 +357,45 @@ def manage_post_status(request):
     return JsonResponse({"code": 0, "msg": "success"})
 
 
+# this is deprecated
+@api_view(['GET'])
+@permission_classes((AllowAny,))
+@authentication_classes((TokenAuthentication,))
+def get_post_list_deprecated(request):
+    """
+        Get all the posts with given settings
+        e.g.
+        http://127.0.0.1:8000/api/post?pageSize=2&pageIndex=1&jobTitle=postdoc&country=100&label=GIS&queryString=geography
+        http://127.0.0.1:8000/api/post?pageSize=2&pageIndex=1&jobTitle=phd&country=100&label=GIS&queryString=geography
+
+    """
+    if request.method == "GET":
+        key_flag = len(request.GET['pageSize']) & len(request.GET['pageIndex']) & len(request.GET['jobTitle']) \
+                   & len(request.GET['country']) & len(request.GET['label']) & len(request.GET['queryString'])
+
+        if key_flag:
+            pageSize = request.GET['pageSize']  # 有package
+            pageIndex = request.GET['pageIndex']
+            jobTitle = request.GET['jobTitle']  # job title char
+            country = request.GET['country']  # country_id
+            # closeDate = request.GET['closeDate'] # 最后被创建的时间
+            label = request.GET['label']
+            queryString = request.GET['queryString']
+
+            # 处理时间的格式, python Date 对象 --> 这部分是测试
+
+            # Get dataset --> 如果确定好获取的参数，就可以用这一部分，将filter中的参数替换成上面的, 需要检查下下面的类型是否对应, 需要进一步测试
+            record = GISource.objects.filter(
+                country=country,
+                job_title=jobTitle
+            )
+            paginator = Paginator(record, pageSize)
+            page_content = paginator.page(pageIndex)
+            serializer = GISourceSerializer(page_content, many=True)
+            print(serializer.data)
+            return Response(serializer.data)
+
+
 @api_view(['GET'])
 @permission_classes((AllowAny,))
 @authentication_classes((TokenAuthentication,))
@@ -218,6 +417,62 @@ def get_post_by_id(request, post_id):
                 return Response(serializer.data)
         else:
             return JsonResponse({"code": 2, "msg": "wrong post id"})
+
+
+@api_view(['POST'])
+@permission_classes((IsAuthenticated,))
+@authentication_classes((TokenAuthentication,))
+def update_post(request, post_id):
+    """Update: update the post content
+    api/manage/post/<post_id>
+
+    e.g. http://127.0.0.1:8000/api/manage/post/2
+    Request body:
+        jobTitle = postdoc
+        country = 100
+    """
+
+    # Django 基于不同的请求用不同的函数
+    if request.method == "POST":
+        print("yes the request method is post")
+        if post_id:
+            post = GISource.objects.get(event_id=post_id)
+            print(post.job_title)
+
+        if post:
+            key_flag = len(request.POST["jobTitle"]) | len(request.POST['country'])
+            if key_flag:
+                job_title = request.POST['jobTitle']
+                country = request.POST['country']
+                if job_title:
+                    post.job_title = job_title
+                if country:
+                    post.country = country
+                post.save()
+                print(post.job_title, post.country)
+                return JsonResponse({"status": "200", "msg": "Update the post successfully!"})
+            else:
+                return JsonResponse({"status": "300", "msg": "Did not pass the parameters..."})
+        else:
+            return JsonResponse({"status": "300", "msg": "Post is not existed, fail to update.."})
+
+
+@api_view(['DELETE'])
+@permission_classes((IsAuthenticated,))
+@authentication_classes((TokenAuthentication,))
+def delete_post(request, post_id):
+    """
+    e.g. http://127.0.0.1:8000/api/manage/delete/44
+    """
+    if request.method == "DELETE":
+        print("post id is ", post_id)
+        post = GISource.objects.get(event_id=post_id)
+        print(post.job_title)
+        if post:
+            post.delete()
+            return JsonResponse({"status": "200", "msg": "Delete the post successfully!"})
+        else:
+            return JsonResponse({"status": "300", "msg": "Post doesnot exist, fail to delete"})
 
 
 @api_view(['POST'])
@@ -267,6 +522,89 @@ def add_post(request):
             return JsonResponse({"status": "400", "msg": "Please check the params"})
     else:
         return JsonResponse({"status": "400", "msg": "Please check the params"})
+
+@api_view(['GET'])
+def get_universities(request):
+    universities = NewUniversity.objects.all()
+    serializer = UniversitySerializer(universities, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def get_cities(request):
+    cities = Cities.objects.all()
+    serializer = CitySerializer(cities, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def get_countries(request):
+    countries = Countries.objects.all()
+    serializer = CountrySerializer(countries, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def get_continent_data(request, continent):
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT * 
+            FROM new_Universities u 
+            JOIN new_city c ON u.City = c.City_Name_EN
+            JOIN new_country co ON c.Country = co.Country_Name_CN
+            WHERE co.Continent = %s
+        """, [continent])
+        rows = cursor.fetchall()
+
+    data = []
+    for row in rows:
+        data.append({
+            'University_Name_CN': row[0],
+            'University_Name_EN': row[1],
+            'University_Name_Local': row[2],
+            'City': row[3],
+            'URL': row[4],
+            'University_Abbr': row[5],
+            'University_Other_Name': row[6],
+            'Description_CN': row[7],
+            'Description_EN': row[8],
+            'Unit_CN': row[9],
+            'Unit_EN': row[10],
+            'id': row[13],
+            'Country': row[16],
+        })
+
+    return Response(data)
+
+@api_view(['GET'])
+def get_country_data(request, country):
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT * 
+            FROM new_Universities u 
+            JOIN new_city c ON u.City = c.City_Name_EN
+            JOIN new_country co ON c.Country = co.Country_Name_CN
+            WHERE co.Country_Name_CN = %s
+        """, [country])
+        rows = cursor.fetchall()
+
+    data = []
+    for row in rows:
+        data.append({
+            'University_Name_CN': row[0],
+            'University_Name_EN': row[1],
+            'University_Name_Local': row[2],
+            'City': row[3],
+            'URL': row[4],
+            'University_Abbr': row[5],
+            'University_Other_Name': row[6],
+            'Description_CN': row[7],
+            'Description_EN': row[8],
+            'Unit_CN': row[9],
+            'Unit_EN': row[10],
+            'id': row[13],
+            'Country': row[16],
+        })
+
+    return Response(data)
 
 from django.core.mail import EmailMessage
 from django.conf import settings

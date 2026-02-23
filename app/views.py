@@ -1,1 +1,1 @@
-"""app views module kept for Django app structure."""
+from app.apis.user_list.views import UserListView
