@@ -1,0 +1,51 @@
+.gitignore
+  s_3d2b0787d757ca::t_e09336db49ba83 259-261
+  s_34dc09cf281c5b::t_1923a9caf0790a 184
+core/urls.py
+  s_34dc09cf281c5b::t_50e30426b3bd10 23,30
+core/views.py
+  s_34dc09cf281c5b::t_3f8357a73872fe 22-25
+deploy/sudoers-next-server
+  s_34dc09cf281c5b::t_9138571500b9e1 1-8
+.github/workflows/deploy.yml
+  s_34dc09cf281c5b::t_ac04bf79b37bc3 5,9,18,27,29,34-35,38-39,41-42,44-45
+requirements.txt
+  s_34dc09cf281c5b::t_dfec72c2ddb12f 14
+deploy/README.md
+  s_34dc09cf281c5b::t_98d43d4ad7ba01 1,3,5,7,14,17-18,22,27,32,39,41,43,49,51,58,60,67,73
+  s_34dc09cf281c5b::t_c288c121c09ddd 2,4,6,8-13,15-16,19-21,23-26,28-31,33-38,40,42,44-48,50,52-57,59,61-66,68-72,74-79
+README.md
+  s_34dc09cf281c5b::t_56f97ae859c40d 3-16
+core/settings.py
+  s_34dc09cf281c5b::t_6dcfc798b1c47c 6,13-16
+  s_34dc09cf281c5b::t_b4ae0cdabf144b 105,111-114
+  s_34dc09cf281c5b::t_13eccae1aa84bd 115
+deploy/next-server.service
+  s_34dc09cf281c5b::t_f765367f9af4e0 1-25
+.env_backup
+  s_34dc09cf281c5b::t_064b4516f57953 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "ba68927e0288475067d5603c1e81c0939c3a72d4",
+  "prompts": {},
+  "sessions": {
+    "s_34dc09cf281c5b": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "3588c600-336e-467f-8e48-6ff4bcd22838",
+        "model": "grok-4.5"
+      },
+      "human_author": "jingyuan <zjingyuan@trip.com>"
+    },
+    "s_3d2b0787d757ca": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "095a2f4c-331a-4894-ba8c-81750d4e6c61",
+        "model": "arn:aws:bedrock:us-west-2:133197901387:application-inference-profile/ypvzpmevzxdl"
+      },
+      "human_author": "jingyuan <zjingyuan@trip.com>"
+    }
+  }
+}
