@@ -19,6 +19,10 @@ def hello_world(request):
 def hello(request):
     return HttpResponse("Welcome")
 
+
+def healthz(request):
+    return HttpResponse("ok", content_type="text/plain")
+
 def map_csv_to_person(data):
     return {
         'person_name_cn': data.get('Person_Name_CN'),

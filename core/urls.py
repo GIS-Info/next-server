@@ -20,13 +20,14 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from app.views import UserListView
-from .views import file_upload
+from .views import file_upload, healthz
 
 
 router = DefaultRouter()
 router.register('api/manage/user', UserListView)
 
 urlpatterns = [
+    path('healthz/', healthz, name='healthz'),
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
     path('api/', include("apps.post.urls")),

@@ -1,0 +1,25 @@
+[Unit]
+Description=GISphere next-server (gunicorn)
+After=network.target
+
+[Service]
+Type=simple
+User=lighthouse
+Group=lighthouse
+WorkingDirectory=/home/lighthouse/proj/next-server
+Environment=DJANGO_SETTINGS_MODULE=core.settings
+ExecStart=/home/lighthouse/proj/next-server/env/bin/gunicorn core.wsgi:application \
+    --bind 127.0.0.1:8000 \
+    --workers 3 \
+    --timeout 60 \
+    --access-logfile - \
+    --error-logfile -
+Restart=always
+RestartSec=3
+
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

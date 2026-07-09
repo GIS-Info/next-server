@@ -2,13 +2,11 @@ name: Deploy
 
 on:
   push:
-    branches: [ "main" ]
-  schedule:
-    - cron: "0 0 * * *" # Daily 00:00 UTC
+    branches: ["main"]
 
 concurrency:
   group: deploy-next-server
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   deploy:
@@ -17,7 +15,7 @@ jobs:
       - name: Setup SSH
         shell: bash
         run: |
-          set -e
+          set -euo pipefail
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
@@ -26,20 +24,23 @@ jobs:
       - name: Deploy on server
         shell: bash
         run: |
-          set -e
+          set -euo pipefail
           ssh -i ~/.ssh/id_rsa lighthouse@43.154.149.214 << 'EOF'
-          set -e
+          set -euo pipefail
 
           cd /home/lighthouse/proj/next-server
 
           git fetch origin main
-          git reset --hard origin/main
+          git checkout -f origin/main
+          echo "Deployed commit: $(git rev-parse HEAD)"
 
-          # Update dependencies
           env/bin/pip install -r requirements.txt
+          env/bin/python manage.py migrate --noinput
+          env/bin/python manage.py collectstatic --noinput
 
-          # Stop previous service (if any), then start one single process.
-          pkill -f "manage.py runserver" || true
+          sudo systemctl restart next-server
+          sudo systemctl is-active --quiet next-server
 
-          nohup env/bin/python manage.py runserver --noreload > /tmp/next-server.log 2>&1 &
+          curl -fsS --retry 5 --retry-delay 2 --retry-connrefused \
+            http://127.0.0.1:8000/healthz/
           EOF

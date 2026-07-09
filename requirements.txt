@@ -11,3 +11,4 @@ sqlparse==0.4.2
 django-rest-knox==4.2.0
 django-mailinglist==0.1.7
 sorl-thumbnail==12.10.0
+gunicorn==21.2.0

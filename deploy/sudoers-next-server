@@ -1,0 +1,8 @@
+# Install on the server as root:
+#   sudo cp deploy/sudoers-next-server /etc/sudoers.d/next-server
+#   sudo chmod 440 /etc/sudoers.d/next-server
+#   sudo visudo -cf /etc/sudoers.d/next-server
+#
+# Allows the deploy user to restart the app without a password.
+
+lighthouse ALL=(root) NOPASSWD: /bin/systemctl start next-server, /bin/systemctl stop next-server, /bin/systemctl restart next-server, /bin/systemctl reload next-server, /bin/systemctl status next-server, /bin/systemctl is-active next-server
