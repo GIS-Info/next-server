@@ -1,0 +1,21 @@
+apps/school/models.py
+  s_ee95912f1d9415::t_35c11bb7f95727 1-3
+core/urls.py
+  s_ee95912f1d9415::t_9c9d93ab974a66 22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "e2f6f855c311a455c7d0e431dab7141f755d4ef2",
+  "prompts": {},
+  "sessions": {
+    "s_ee95912f1d9415": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "b2cbbcea-a244-47a2-a8b4-6ebae02a0352",
+        "model": "grok-4.5"
+      },
+      "human_author": "jingyuan <zjingyuan@trip.com>"
+    }
+  }
+}
