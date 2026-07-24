@@ -1,0 +1,21 @@
+.github/workflows/deploy.yml
+  s_125f9b9f86593a::t_397b84912ce1cd 6-7
+deploy/next-server.service
+  s_125f9b9f86593a::t_1f9b6d105ccc3a 15-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "71285ab48da23fee1c39fb011ed10be4807840d4",
+  "prompts": {},
+  "sessions": {
+    "s_125f9b9f86593a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bcac0551-8600-4324-a942-ba479cbd8b58",
+        "model": "arn:aws:bedrock:us-west-2:133197901387:application-inference-profile/ypvzpmevzxdl"
+      },
+      "human_author": "jingyuan <zjingyuan@trip.com>"
+    }
+  }
+}
