@@ -1,0 +1,21 @@
+apps/school/views.py
+  s_0601db6520f7e8::t_9e8504c15f6720 7-19,32-34,36-48,50-52,60-62,64-65,67,71
+apps/school/tests.py
+  s_0601db6520f7e8::t_0731e2cef93c7e 1-67
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "faeb23c615e172a8c8f323ef42ee99eab266f89b",
+  "prompts": {},
+  "sessions": {
+    "s_0601db6520f7e8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "87221a50-0992-4114-8bec-95cee820a295",
+        "model": "arn:aws:bedrock:us-west-2:133197901387:application-inference-profile/ypvzpmevzxdl"
+      },
+      "human_author": "jingyuan <zjingyuan@trip.com>"
+    }
+  }
+}
