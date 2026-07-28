@@ -4,6 +4,19 @@ from rest_framework.decorators import api_view, permission_classes, authenticati
 from rest_framework.response import Response
 from django.db import connection
 
+# 允许作为 tag 过滤列名的白名单：new_Universities 与 new_people 两表同时存在的布尔标签列。
+# 列名不能通过驱动参数化，白名单是唯一防线。
+ALLOWED_TAGS = frozenset({
+    'Physical_Geography',
+    'Human_Geography',
+    'Urban_Planning',
+    'GIS',
+    'RS',
+    'GNSS',
+    'Transportation',
+})
+
+
 @api_view(['GET'])
 @permission_classes((AllowAny,))
 @authentication_classes((TokenAuthentication,))
@@ -16,20 +29,27 @@ def get_school_list(request):
     http://127.0.0.1:8000/api/schools?continent=Asia
     """
     where_clauses = []
-    
-    # 如果请求中带了 tag 参数，构造标签过滤条件
+    params = []
+
+    # tag：按逗号切分后仅保留白名单命中项；全部非法时用恒假条件占位，避免 SQL 语法错误。
     if 'tag' in request.GET:
-        tags = request.GET['tag'].split(',')
-        tag_conditions = []
-        for tag in tags:
-            tag_conditions.append('(u.' + tag + '=1 AND p.' + tag + '=1)')
-        where_clauses.append('(' + ' OR '.join(tag_conditions) + ')')
-    
-    # 如果请求中带了 continent 参数，构造地区过滤条件
+        valid_tags = [
+            tag for tag in (item.strip() for item in request.GET['tag'].split(','))
+            if tag in ALLOWED_TAGS
+        ]
+        if valid_tags:
+            tag_conditions = [
+                '(u.' + tag + '=1 AND p.' + tag + '=1)' for tag in valid_tags
+            ]
+            where_clauses.append('(' + ' OR '.join(tag_conditions) + ')')
+        else:
+            where_clauses.append('(0)')
+
+    # continent：走参数化占位符，驱动负责转义/绑定。
     if 'continent' in request.GET:
-        continent = request.GET['continent']
-        where_clauses.append("co.Continent_EN = '" + continent + "'")
-    
+        where_clauses.append('co.Continent_EN = %s')
+        params.append(request.GET['continent'])
+
     # 构造最终的 WHERE 子句
     where_sql = ''
     if where_clauses:
@@ -37,18 +57,18 @@ def get_school_list(request):
 
     with connection.cursor() as cursor:
         cursor.execute("""
-            SELECT u.University_Name_CN, u.University_Name_EN, u.University_Name_Local, 
-            u.City, u.URL, u.University_Abbr, u.University_Other_Name, 
-            u.Description_CN, u.Description_EN, u.Unit_CN, u.Unit_EN, u.Lon, u.Lat, 
+            SELECT u.University_Name_CN, u.University_Name_EN, u.University_Name_Local,
+            u.City, u.URL, u.University_Abbr, u.University_Other_Name,
+            u.Description_CN, u.Description_EN, u.Unit_CN, u.Unit_EN, u.Lon, u.Lat,
             u.Universities_id, c.City_Name_CN, c.City_Name_EN, c.Country, c.Lat, c.Lon,
-            c.City_Name_Other, c.City_id, c.Country_EN, co.Country_Name_CN, co.Country_Name_EN, 
-            co.Continent, co.Country_id, co.Continent_EN, p.Person_Name_CN, p.Person_Name_EN, p.URL, 
+            c.City_Name_Other, c.City_id, c.Country_EN, co.Country_Name_CN, co.Country_Name_EN,
+            co.Continent, co.Country_id, co.Continent_EN, p.Person_Name_CN, p.Person_Name_EN, p.URL,
             p.Physical_Geography, p.Human_Geography, p.Urban_Planning, p.GIS, p.RS, p.GNSS, p.Transportation, p.Research_Interests, p.people_id, p.Research_Interests_CN
-            FROM new_Universities u 
+            FROM new_Universities u
             LEFT JOIN new_city c ON u.City = c.City_Name_EN
             LEFT JOIN new_country co ON c.Country = co.Country_Name_CN
             LEFT JOIN new_people p ON u.University_Name_EN = p.University
-        """ + where_sql)
+        """ + where_sql, params)
         rows = cursor.fetchall()
 
     # 优化：使用列表推导式减少内存占用
